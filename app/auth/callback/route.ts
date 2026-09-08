@@ -10,7 +10,7 @@ export async function GET(request: Request) {
     if (code) {
       // Next.js 15の仕様変更に合わせて、cookies()をawaitで展開する
       const cookieStore = await cookies()
-      const supabase = createRouteHandlerClient({ cookies: () => cookieStore })
+      const supabase = createRouteHandlerClient({ cookies: () => cookieStore as any})
       
       const { error } = await supabase.auth.exchangeCodeForSession(code)
       
