@@ -1,103 +1,105 @@
-import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { redirect } from 'next/navigation';
-import Link from 'next/link';
+'use client'
 
-export default async function NewLetterPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ partnerId?: string }>
-}) {
-  const params = await searchParams;
-  const partnerId = params.partnerId;
+import { useState, Suspense } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
-  if (!partnerId) {
-    return (
-      <div className="max-w-2xl mx-auto p-4 text-center mt-10">
-        <p className="text-gray-600">エラー: 送信先のペンパルが指定されていません。</p>
-        <Link href="/dashboard" className="text-blue-600 hover:underline mt-4 inline-block">マイページへ戻る</Link>
-      </div>
-    );
-  }
+function ComposeForm() {
+  const searchParams = useSearchParams()
+  const receiverId = searchParams.get('to')
+  const receiverName = searchParams.get('name') || '相手'
 
-  // --- サーバーアクション（手紙の送信処理） ---
-  async function sendLetter(formData: FormData) {
-    'use server';
-    const content = formData.get('content') as string;
-    const receiverId = formData.get('partnerId') as string;
+  const [content, setContent] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-    if (!content || content.length > 144) {
-      throw new Error('文字数制限(144文字)を超えているか、内容が空です。');
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!content.trim() || !receiverId) return
+    setLoading(true)
+
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert('ログインが必要です')
+      return
     }
 
-    const cookieStore = await cookies();
-    const supabase = createServerComponentClient({
-      cookies: () => cookieStore as any,
-    });
+    const deliveryTime = new Date(Date.now() + 60 * 60 * 1000).toISOString()
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('認証エラー: ログインしていません。');
-
-    // ▼ 追加ロジック：配達日時（delivery_at）の計算 ▼
-    // 現在時刻から24時間後（1日後）を配達日時に設定するわ。
-    // ※ 開発中のテストですぐに届けたい場合は、 `24 * 60 * 60 * 1000` の部分を `1 * 60 * 1000` (1分後) などに変更してね。
-    const deliveryAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
-
-    const { error } = await supabase
-      .from('letters')
-      .insert({
-        sender_id: user.id,
-        receiver_id: receiverId,
-        content: content,
-        delivery_at: deliveryAt, // 不足していた必須データ（配達予定日時）を追加！
-      });
+    const { error } = await supabase.from('letters').insert({
+      sender_id: user.id,
+      receiver_id: receiverId,
+      content: content,
+      delivery_at: deliveryTime,
+      is_read: false
+    })
 
     if (error) {
-      console.error('DBエラー:', error);
-      throw new Error('手紙の送信に失敗しました。');
+      alert('送信に失敗しました')
+      setLoading(false)
+    } else {
+      alert('手紙をポストに入れました！1時間後に相手に届きます。')
+      router.push('/dashboard')
     }
-
-    // 送信完了後、マイページへ戻る
-    redirect('/dashboard');
   }
 
-  // --- 画面のレンダリング ---
   return (
-    <div className="max-w-2xl mx-auto p-4 mt-10 space-y-6">
-      <h1 className="text-2xl font-bold border-b pb-2">手紙を書く</h1>
-      
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <form action={sendLetter} className="space-y-6">
-          <input type="hidden" name="partnerId" value={partnerId} />
-          
-          <div>
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
-              メッセージ <span className="text-gray-400 text-xs">（最大144文字）</span>
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              rows={6}
-              maxLength={144}
-              required
-              className="w-full p-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-none bg-gray-50 text-gray-800"
-              placeholder="ここに手紙の本文を書いてください。送信後は相手に届くまで24時間かかります..."
-            ></textarea>
-          </div>
+    <form onSubmit={handleSend} className="space-y-6">
+      <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 flex items-center space-x-3">
+        <span className="text-2xl">🕊️</span>
+        <p className="text-orange-900 font-bold">宛先: {receiverName}</p>
+      </div>
 
-          <div className="flex justify-between items-center pt-4 border-t">
-            <Link href="/dashboard" className="text-gray-500 hover:text-gray-800 font-medium transition">
-              キャンセル
-            </Link>
-            <button
-              type="submit"
-              className="px-8 py-3 bg-blue-600 text-white font-medium rounded-full hover:bg-blue-700 transition shadow-md hover:shadow-lg"
-            >
-              ポストに投函する
-            </button>
-          </div>
-        </form>
+      <textarea 
+        value={content} 
+        onChange={(e) => setContent(e.target.value)} 
+        required 
+        rows={12} 
+        placeholder="ここに手紙の本文を書いてください。のんびり、思いを込めて..." 
+        className="w-full p-5 bg-gray-50 border border-gray-200 rounded-2xl text-gray-800 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none resize-none transition-all" 
+      />
+
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-2">
+        <p className="text-xs font-medium text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
+          ※手紙は送信から1時間後に相手に届きます。
+        </p>
+        <button 
+          type="submit" 
+          disabled={loading || !content.trim()} 
+          className="w-full md:w-auto px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? '送信中...' : '手紙をポストに入れる'}
+        </button>
+      </div>
+    </form>
+  )
+}
+
+export default function NewLetterPage() {
+  return (
+    <div className="min-h-screen bg-[#faf9f5] p-8 font-sans">
+      <div className="max-w-2xl mx-auto space-y-6">
+        
+        <div className="flex justify-between items-center px-2">
+          <h1 className="text-2xl font-bold text-gray-800">新しい手紙を書く</h1>
+          <Link className="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium" href="/users">
+            ← キャンセル
+          </Link>
+        </div>
+
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
+          <Suspense fallback={<div className="text-center py-10 text-gray-500">準備中...</div>}>
+            <ComposeForm />
+          </Suspense>
+        </div>
+        
       </div>
     </div>
-  );
+  )
 }
