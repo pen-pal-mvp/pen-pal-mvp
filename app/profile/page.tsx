@@ -1,96 +1,65 @@
-'use client'
+import { cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
+import { redirect } from 'next/navigation'
+import Link from 'next/link'
+import DeleteAccountForm from './DeleteAccountForm'
 
-import { useState, useEffect } from 'react'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-
-export default function ProfilePage() {
-  const supabase = createClientComponentClient()
-  const [penname, setPenname] = useState('')
-  const [bio, setBio] = useState('')
-  const [message, setMessage] = useState('')
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    async function loadProfile() {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
-        window.location.href = '/'
-        return
-      }
-
-      const { data, error } = await supabase
-        .from('users')
-        .select('penname, bio')
-        .eq('id', session.user.id)
-        .single()
-
-      if (data) {
-        setPenname(data.penname || '')
-        setBio(data.bio || '')
-      }
-      setLoading(false)
+export default async function ProfilePage() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+        setAll() {},
+      },
     }
-    loadProfile()
-  }, [supabase])
+  )
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setMessage('')
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/')
 
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      setMessage('エラー: ログインしていません。')
-      return
-    }
-
-    // ここを update から upsert に変更して、idも一緒に保存するようにしたわ
-    const { error } = await supabase
-      .from('users')
-      .upsert({ id: session.user.id, penname, bio })
-
-    if (error) {
-      setMessage('エラー: ' + error.message)
-    } else {
-      setMessage('プロフィールを更新しました。')
-    }
-  }
-
-  if (loading) {
-    return <div className="p-8 text-center text-black">読み込み中...</div>
-  }
+  const { data: userData } = await supabase
+    .from('users')
+    .select('*')
+    .eq('id', user.id)
+    .single()
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 bg-white border rounded text-black shadow">
-      <h1 className="text-xl font-bold mb-4 text-center">プロフィール設定</h1>
-      <form onSubmit={handleUpdate}>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">ペンネーム</label>
-          <input
-            type="text"
-            value={penname}
-            onChange={(e) => setPenname(e.target.value)}
-            className="w-full p-2 border rounded text-black bg-white"
-            placeholder="ペンネームを入力"
-          />
+    <div className="min-h-screen bg-gray-50 p-8">
+      <div className="max-w-md mx-auto bg-white p-8 rounded-xl shadow-sm border border-gray-100 space-y-8">
+        
+        <div>
+          <Link href="/dashboard" className="text-blue-500 text-sm hover:underline mb-4 inline-block">← ダッシュボードへ戻る</Link>
+          <h1 className="text-2xl font-bold text-gray-800">プロフィール設定</h1>
         </div>
-        <div className="mb-4">
-          <label className="block text-sm font-bold mb-1">自己紹介</label>
-          <textarea
-            value={bio}
-            onChange={(e) => setBio(e.target.value)}
-            className="w-full p-2 border rounded text-black bg-white h-24"
-            placeholder="自己紹介を入力"
-          />
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">現在のペンネーム</label>
+            <div className="p-3 bg-gray-50 rounded border text-gray-800">{userData?.pen_name}</div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">アイコン</label>
+            <div className="text-4xl">{userData?.avatar_type || '😊'}</div>
+          </div>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">プレミアム状態</label>
+            <div className="p-3 bg-gray-50 rounded border text-gray-800">
+              {userData?.is_premium ? '🌟 プレミアム会員' : '無料会員'}
+            </div>
+          </div>
         </div>
-        <button type="submit" className="w-full p-2 bg-blue-600 text-white rounded font-bold hover:bg-blue-700">
-          保存する
-        </button>
-      </form>
-      {message && (
-        <p className={`mt-4 text-sm text-center font-bold ${message.includes('成功') || message.includes('更新しました') ? 'text-green-600' : 'text-red-600'}`}>
-          {message}
-        </p>
-      )}
+
+        <hr className="border-gray-100" />
+
+        <div className="pt-4">
+          <h2 className="text-red-500 font-bold text-sm mb-2">危険な操作</h2>
+          <DeleteAccountForm />
+        </div>
+
+      </div>
     </div>
   )
 }
