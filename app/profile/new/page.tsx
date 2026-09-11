@@ -1,99 +1,113 @@
-import { cookies } from 'next/headers';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
-import { redirect } from 'next/navigation';
+'use client'
 
-export default async function NewProfilePage() {
-  // 1. セッション（ログイン状態）の確認（※ここでエラーが起きて弾かれていたのを修正済！）
-  const cookieStore = await cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore as any });
-  
-  const { data: { session } } = await supabase.auth.getSession();
+import { useState, Suspense } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 
-  // セッションがない場合はログイン画面へ
-  if (!session) {
-    redirect('/'); 
-  }
+function ComposeForm() {
+  const searchParams = useSearchParams()
+  const receiverId = searchParams.get('to')
+  const receiverName = searchParams.get('name') || '相手'
 
-  // 2. プロフィールをDBに保存する処理（サーバーアクション）
-  async function saveProfile(formData: FormData) {
-    'use server';
-    
-    // 保存時にもCookieを正しく読み込む
-    const cookieStore = await cookies();
-    const supabase = createServerComponentClient({ cookies: () => cookieStore as any });
-    const { data: { session } } = await supabase.auth.getSession();
+  const [content, setContent] = useState('')
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-    if (!session) return;
+  const MAX_LENGTH = 400 // ここで手紙の最大文字数を設定
 
-    // フォームの入力値を取得
-    const pen_name = formData.get('pen_name') as string;
-    const avatar_type = formData.get('avatar_type') as string;
-    const bio = formData.get('bio') as string;
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
 
-    // usersテーブルに保存（INSERT or UPDATE）
-    const { error } = await supabase.from('users').upsert({
-      id: session.user.id,
-      email: session.user.email,
-      pen_name,
-      avatar_type,
-      bio,
-      created_at: new Date().toISOString(),
-    });
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!content.trim() || !receiverId || content.length > MAX_LENGTH) return
+    setLoading(true)
 
-    if (error) {
-      console.error('保存エラー:', error.message);
-      return;
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      alert('ログインが必要です')
+      return
     }
 
-    // 保存に成功したらユーザー一覧画面へ自動移動！
-    redirect('/users');
+    const deliveryTime = new Date(Date.now() + 60 * 60 * 1000).toISOString()
+
+    const { error } = await supabase.from('letters').insert({
+      sender_id: user.id,
+      receiver_id: receiverId,
+      content: content.trim(),
+      delivery_at: deliveryTime,
+      is_read: false
+    })
+
+    if (error) {
+      alert('送信に失敗しました')
+      setLoading(false)
+    } else {
+      alert('手紙をポストに入れました！1時間後に相手に届きます。')
+      router.push('/dashboard')
+    }
   }
 
   return (
-    <div className="max-w-2xl mx-auto p-6 mt-10 bg-white rounded-xl shadow-md">
-      <h1 className="text-2xl font-bold mb-6 text-gray-800">プロフィールを作成する</h1>
-      
-      <form action={saveProfile} className="space-y-5">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">ペンネーム</label>
-          <input 
-            type="text" 
-            name="pen_name" 
-            required 
-            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            placeholder="例: 夜更かしフクロウ" 
-          />
+    <form onSubmit={handleSend} className="space-y-4">
+      <div className="bg-orange-50 p-5 rounded-xl border border-orange-100 flex items-center space-x-3 mb-2">
+        <span className="text-2xl">🕊️</span>
+        <p className="text-orange-900 font-bold">宛先: {receiverName}</p>
+      </div>
+
+      <div className="relative">
+        <textarea 
+          value={content} 
+          onChange={(e) => setContent(e.target.value)} 
+          required 
+          maxLength={MAX_LENGTH}
+          rows={12} 
+          placeholder={`ここに手紙の本文を書いてください。（最大${MAX_LENGTH}文字）`}
+          className="w-full p-5 pb-8 bg-gray-50 border border-gray-200 rounded-2xl text-gray-800 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none resize-none transition-all" 
+        />
+        <div className={`absolute bottom-4 right-4 text-sm font-medium ${content.length >= MAX_LENGTH ? 'text-red-500' : 'text-gray-400'}`}>
+          {content.length} / {MAX_LENGTH}
         </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">アイコン (絵文字など)</label>
-          <input 
-            type="text" 
-            name="avatar_type" 
-            required 
-            defaultValue="✉️" 
-            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">自己紹介 (最大144文字)</label>
-          <textarea 
-            name="bio" 
-            maxLength={144} 
-            required 
-            className="w-full border border-gray-300 rounded-md p-3 text-gray-800 h-32 focus:outline-none focus:ring-2 focus:ring-blue-500" 
-            placeholder="初めまして。のんびり文通したいです。"
-          ></textarea>
-        </div>
-        
+      </div>
+
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-4">
+        <p className="text-xs font-medium text-gray-500 bg-gray-100 px-4 py-2 rounded-lg">
+          ※手紙は送信から1時間後に相手に届きます。
+        </p>
         <button 
           type="submit" 
-          className="w-full bg-blue-500 text-white font-bold py-3 rounded-lg hover:bg-blue-600 transition duration-200"
+          disabled={loading || !content.trim() || content.length > MAX_LENGTH} 
+          className="w-full md:w-auto px-10 py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          保存してペンパルを探す
+          {loading ? '送信中...' : '手紙をポストに入れる'}
         </button>
-      </form>
+      </div>
+    </form>
+  )
+}
+
+export default function NewLetterPage() {
+  return (
+    <div className="min-h-screen bg-[#faf9f5] p-8 font-sans">
+      <div className="max-w-2xl mx-auto space-y-6">
+        
+        <div className="flex justify-between items-center px-2">
+          <h1 className="text-2xl font-bold text-gray-800">新しい手紙を書く</h1>
+          <Link className="text-sm text-gray-500 hover:text-orange-500 transition-colors font-medium" href="/users">
+            ← キャンセル
+          </Link>
+        </div>
+
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-gray-100">
+          <Suspense fallback={<div className="text-center py-10 text-gray-500">準備中...</div>}>
+            <ComposeForm />
+          </Suspense>
+        </div>
+        
+      </div>
     </div>
-  );
+  )
 }
