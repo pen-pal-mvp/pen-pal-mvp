@@ -99,10 +99,17 @@ export default async function DashboardPage() {
                   </div>
                   {isDelivered ? (
                     <div>
-                      <p className="text-gray-700 whitespace-pre-wrap mb-6 leading-relaxed bg-gray-50 p-4 rounded-xl">
-                        {letter.content}
-                      </p>
-                      <Link className="inline-block border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-6 py-2 rounded-full text-sm font-bold transition-colors" href={`/letters/${letter.id}/reply`}>
+                      <Link href={`/letters/${letter.id}`} className="block group mb-6">
+                        <div className="bg-gray-50 p-4 rounded-xl group-hover:bg-orange-50 group-hover:border-orange-200 border border-transparent transition-all">
+                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
+                            {letter.content}
+                          </p>
+                          <p className="mt-2 text-sm font-bold text-orange-500 flex items-center">
+                            手紙を開く（AI翻訳） <span className="ml-1">✨</span>
+                          </p>
+                        </div>
+                      </Link>
+                      <Link className="inline-block border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-6 py-2 rounded-full text-sm font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
                         返信を書く
                       </Link>
                     </div>
