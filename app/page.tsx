@@ -1,21 +1,32 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 
 export default function Home() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ text: '', isError: false })
-  const [isEmailSent, setIsEmailSent] = useState(false) // 送信完了状態を管理するフラグ
+  const [isEmailSent, setIsEmailSent] = useState(false)
+  const [cooldown, setCooldown] = useState(0) // 連続送信防止タイマー
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
+  // 60秒のカウントダウン処理
+  useEffect(() => {
+    if (cooldown > 0) {
+      const timer = setTimeout(() => setCooldown(cooldown - 1), 1000)
+      return () => clearTimeout(timer)
+    }
+  }, [cooldown])
+
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (cooldown > 0) return // タイマー動作中は処理しない（フロントエンド防衛）
+
     setLoading(true)
     setMessage({ text: '', isError: false })
 
@@ -30,7 +41,8 @@ export default function Home() {
       setMessage({ text: 'エラーが発生しました。時間を置いて再度お試しください。', isError: true })
       setLoading(false)
     } else {
-      setIsEmailSent(true) // 送信成功したらフォームを隠す
+      setIsEmailSent(true)
+      setCooldown(60) // 送信成功時に60秒のロックをかける
       setLoading(false)
     }
   }
@@ -65,7 +77,6 @@ export default function Home() {
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-pink-500"></div>
           
           {isEmailSent ? (
-            // 【送信完了後の画面】マーケティングを意識したUI
             <div className="text-center space-y-6 animate-fade-in">
               <div className="text-6xl mb-4">💌</div>
               <h3 className="text-2xl font-bold text-gray-800">メールを送信しました</h3>
@@ -75,7 +86,6 @@ export default function Home() {
                 メール内のリンクをタップしてログインしてください。
               </p>
               
-              {/* マネタイズのためのティザー（種まき） */}
               <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100 mt-6 text-left">
                 <h4 className="font-bold text-orange-900 mb-3 flex items-center">
                   <span className="mr-2">💡</span> プレミアム会員ならもっと快適に
@@ -97,7 +107,6 @@ export default function Home() {
               </div>
             </div>
           ) : (
-            // 【送信前の画面】入力フォーム
             <>
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">ペンパルをはじめる</h3>
@@ -117,10 +126,10 @@ export default function Home() {
                 </div>
                 <button 
                   type="submit" 
-                  disabled={loading || !email}
+                  disabled={loading || !email || cooldown > 0}
                   className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {loading ? '送信中...' : 'ログインメールを送る'}
+                  {cooldown > 0 ? `再送信まで ${cooldown}秒お待ちください` : loading ? '送信中...' : 'ログインメールを送る'}
                 </button>
 
                 {message.text && (
