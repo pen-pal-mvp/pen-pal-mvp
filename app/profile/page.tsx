@@ -20,13 +20,14 @@ export default async function ProfilePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
+  // レコードが存在しない場合のエラーを防ぐために maybeSingle() を使用
   const { data: userData } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .maybeSingle()
 
-  // プロフィールを更新するサーバーアクション
+  // プロフィールを更新（または新規作成）するサーバーアクション
   async function updateProfile(formData: FormData) {
     'use server'
     const pen_name = formData.get('pen_name') as string
@@ -48,13 +49,15 @@ export default async function ProfilePage() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      // update ではなく upsert（なければ作成、あれば更新）を使用する
       await supabase
         .from('users')
-        .update({
+        .upsert({
+          id: user.id,
+          email: user.email,
           pen_name: pen_name.trim(),
-          avatar_type: avatar_type || '😊'
+          avatar_type: avatar_type || '😊',
         })
-        .eq('id', user.id)
     }
     
     // 保存完了後はダッシュボードへ戻る
