@@ -20,14 +20,12 @@ export default async function ProfilePage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // レコードが存在しない場合のエラーを防ぐために maybeSingle() を使用
   const { data: userData } = await supabase
     .from('users')
     .select('*')
     .eq('id', user.id)
     .maybeSingle()
 
-  // プロフィールを更新（または新規作成）するサーバーアクション
   async function updateProfile(formData: FormData) {
     'use server'
     const pen_name = formData.get('pen_name') as string
@@ -49,18 +47,16 @@ export default async function ProfilePage() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      // update ではなく upsert（なければ作成、あれば更新）を使用する
       await supabase
         .from('users')
         .upsert({
           id: user.id,
-          email: user.email,
-          pen_name: pen_name.trim(),
+          // email: user.email はデータベースから消したのでここからも削除しました
+          pen_name: pen_name.trim().substring(0, 20),
           avatar_type: avatar_type || '😊',
         })
     }
     
-    // 保存完了後はダッシュボードへ戻る
     redirect('/dashboard')
   }
 
@@ -75,12 +71,13 @@ export default async function ProfilePage() {
 
         <form action={updateProfile} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">ペンネーム</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">ペンネーム（最大20文字）</label>
             <input 
               type="text" 
               name="pen_name" 
               defaultValue={userData?.pen_name || ''} 
               required 
+              maxLength={20}
               className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-gray-800"
               placeholder="例: 지민"
             />
