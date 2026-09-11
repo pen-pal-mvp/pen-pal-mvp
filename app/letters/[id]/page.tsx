@@ -3,8 +3,11 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function LetterDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params
+// paramsの型をPromiseに変更
+export default async function LetterDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  // awaitを使ってidを取得（最新Next.jsの必須仕様）
+  const { id } = await params
+  
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,7 +18,6 @@ export default async function LetterDetailPage({ params }: { params: { id: strin
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // 手紙データの取得（RLSにより受信者本人のみ取得可能）
   const { data: letter, error } = await supabase
     .from('letters')
     .select('*')
@@ -23,11 +25,8 @@ export default async function LetterDetailPage({ params }: { params: { id: strin
     .single()
 
   if (error || !letter) notFound()
-
-  // 受信者が自分であることを確認
   if (letter.receiver_id !== user.id) notFound()
 
-  // 配達時間チェック（まだ配達中の場合は閲覧不可）
   const isDelivered = new Date(letter.delivery_at) <= new Date()
   if (!isDelivered) {
     return (
@@ -48,21 +47,10 @@ export default async function LetterDetailPage({ params }: { params: { id: strin
     )
   }
 
-  // ユーザーのプレミアムステータス確認
-  const { data: userData } = await supabase
-    .from('users')
-    .select('is_premium')
-    .eq('id', user.id)
-    .single()
-
+  const { data: userData } = await supabase.from('users').select('is_premium').eq('id', user.id).single()
   const isPremium = userData?.is_premium || false
 
-  // 送信者のペンネーム取得
-  const { data: senderData } = await supabase
-    .from('users')
-    .select('pen_name, avatar_type')
-    .eq('id', letter.sender_id)
-    .single()
+  const { data: senderData } = await supabase.from('users').select('pen_name, avatar_type').eq('id', letter.sender_id).single()
 
   return (
     <div className="min-h-screen bg-[#faf9f5] p-8 font-sans">
@@ -95,7 +83,6 @@ export default async function LetterDetailPage({ params }: { params: { id: strin
             </p>
           </div>
 
-          {/* AI翻訳セクション */}
           <div className="pt-4 border-t border-gray-100">
             {isPremium ? (
               <div className="bg-orange-50/50 p-5 rounded-2xl border border-orange-100 space-y-3">
@@ -106,7 +93,6 @@ export default async function LetterDetailPage({ params }: { params: { id: strin
                   <span className="text-xs bg-orange-200 text-orange-800 px-2.5 py-1 rounded-full font-bold">プレミアム機能</span>
                 </div>
                 <p className="text-gray-600 text-sm leading-relaxed">
-                  {/* ※実際のAI翻訳API連携は次ステップで実装します */}
                   （ここに翻訳されたテキストがインラインで表示されます）
                 </p>
               </div>
