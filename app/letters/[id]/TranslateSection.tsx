@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-// ↓エラーの原因だったファイル名を正しいもの（translationActions）に修正済みよ
 import { translateLetterAction } from '../../actions/translationActions'
 
 export default function TranslateSection({ content, isPremium }: { content: string, isPremium: boolean }) {
@@ -36,9 +35,16 @@ export default function TranslateSection({ content, isPremium }: { content: stri
     setError(null)
     try {
       const result = await translateLetterAction(content)
-      setTranslatedText(result)
+      
+      if (result?.error) {
+        setError(result.error) // サーバーからの本当のエラーメッセージを表示
+      } else if (result?.data) {
+        setTranslatedText(result.data) // 成功時は翻訳結果を表示
+      } else {
+        setError('翻訳結果を取得できませんでした。')
+      }
     } catch (err: any) {
-      setError(err.message || '翻訳に失敗しました。')
+      setError('通信エラーが発生しました。')
     } finally {
       setIsLoading(false)
     }
