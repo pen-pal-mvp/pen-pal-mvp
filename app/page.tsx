@@ -7,6 +7,7 @@ export default function Home() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ text: '', isError: false })
+  const [isEmailSent, setIsEmailSent] = useState(false) // 送信完了状態を管理するフラグ
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +22,6 @@ export default function Home() {
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        // メールのリンクをクリックした時に戻ってくる先（さっき作った鍵穴）
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     })
@@ -30,9 +30,8 @@ export default function Home() {
       setMessage({ text: 'エラーが発生しました。時間を置いて再度お試しください。', isError: true })
       setLoading(false)
     } else {
-      setMessage({ text: '✨ ログイン用のリンクをメールで送信しました！受信トレイを確認してください。', isError: false })
+      setIsEmailSent(true) // 送信成功したらフォームを隠す
       setLoading(false)
-      setEmail('')
     }
   }
 
@@ -65,42 +64,79 @@ export default function Home() {
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-gray-100 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-pink-500"></div>
           
-          <div className="text-center mb-8">
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">ペンパルをはじめる</h3>
-            <p className="text-gray-500 text-sm">まずはメールアドレスで無料登録・ログイン</p>
-          </div>
-
-          <form onSubmit={handleMagicLinkLogin} className="space-y-5">
-            <div>
-              <input 
-                type="email" 
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="メールアドレスを入力" 
-                className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-gray-800"
-              />
-            </div>
-            <button 
-              type="submit" 
-              disabled={loading || !email}
-              className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? '送信中...' : 'ログインメールを送る'}
-            </button>
-
-            {message.text && (
-              <div className={`p-4 rounded-xl text-sm font-medium ${message.isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
-                {message.text}
+          {isEmailSent ? (
+            // 【送信完了後の画面】マーケティングを意識したUI
+            <div className="text-center space-y-6 animate-fade-in">
+              <div className="text-6xl mb-4">💌</div>
+              <h3 className="text-2xl font-bold text-gray-800">メールを送信しました</h3>
+              <p className="text-gray-600 leading-relaxed">
+                <span className="font-bold text-gray-800">{email}</span> 宛に<br/>
+                ログイン用のリンクをお送りしました。<br/>
+                メール内のリンクをタップしてログインしてください。
+              </p>
+              
+              {/* マネタイズのためのティザー（種まき） */}
+              <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100 mt-6 text-left">
+                <h4 className="font-bold text-orange-900 mb-3 flex items-center">
+                  <span className="mr-2">💡</span> プレミアム会員ならもっと快適に
+                </h4>
+                <ul className="text-sm text-orange-800 space-y-2 font-medium">
+                  <li>・ワンタップで手紙をAI自動翻訳</li>
+                  <li>・お気に入りの手紙を無制限に保存</li>
+                  <li>・優先的なマッチングサポート</li>
+                </ul>
               </div>
-            )}
-          </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-xs text-gray-400">
-              ※パスワードは不要です。入力したアドレス宛にログイン用の安全なリンクをお送りします。
-            </p>
-          </div>
+              <div className="pt-4">
+                <button 
+                  onClick={() => setIsEmailSent(false)} 
+                  className="text-sm text-gray-400 hover:text-orange-500 transition-colors underline"
+                >
+                  メールアドレスを入力し直す
+                </button>
+              </div>
+            </div>
+          ) : (
+            // 【送信前の画面】入力フォーム
+            <>
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-gray-800 mb-2">ペンパルをはじめる</h3>
+                <p className="text-gray-500 text-sm">まずはメールアドレスで無料登録・ログイン</p>
+              </div>
+
+              <form onSubmit={handleMagicLinkLogin} className="space-y-5">
+                <div>
+                  <input 
+                    type="email" 
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="メールアドレスを入力" 
+                    className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-gray-800"
+                  />
+                </div>
+                <button 
+                  type="submit" 
+                  disabled={loading || !email}
+                  className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? '送信中...' : 'ログインメールを送る'}
+                </button>
+
+                {message.text && (
+                  <div className={`p-4 rounded-xl text-sm font-medium ${message.isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                    {message.text}
+                  </div>
+                )}
+              </form>
+
+              <div className="mt-6 text-center">
+                <p className="text-xs text-gray-400">
+                  ※パスワードは不要です。入力したアドレス宛にログイン用の安全なリンクをお送りします。
+                </p>
+              </div>
+            </>
+          )}
         </div>
 
       </main>
