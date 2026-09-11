@@ -2,10 +2,9 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import TranslateSection from './TranslateSection'
 
-// paramsの型をPromiseに変更
 export default async function LetterDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  // awaitを使ってidを取得（最新Next.jsの必須仕様）
   const { id } = await params
   
   const cookieStore = await cookies()
@@ -83,37 +82,9 @@ export default async function LetterDetailPage({ params }: { params: Promise<{ i
             </p>
           </div>
 
+          {/* 新しく作成した翻訳セクションコンポーネントを配置 */}
           <div className="pt-4 border-t border-gray-100">
-            {isPremium ? (
-              <div className="bg-orange-50/50 p-5 rounded-2xl border border-orange-100 space-y-3">
-                <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-orange-900 flex items-center text-sm">
-                    <span className="mr-2">✨</span> AI自動翻訳
-                  </h3>
-                  <span className="text-xs bg-orange-200 text-orange-800 px-2.5 py-1 rounded-full font-bold">プレミアム機能</span>
-                </div>
-                <p className="text-gray-600 text-sm leading-relaxed">
-                  （ここに翻訳されたテキストがインラインで表示されます）
-                </p>
-              </div>
-            ) : (
-              <div className="bg-gradient-to-r from-orange-50 to-pink-50 p-6 rounded-2xl border border-orange-100 text-center space-y-4">
-                <div className="space-y-1">
-                  <h3 className="font-bold text-gray-800 flex items-center justify-center">
-                    <span className="mr-2">✨</span> ワンタップAI自動翻訳を使いませんか？
-                  </h3>
-                  <p className="text-xs text-gray-600">
-                    プレミアムプランに登録すると、韓国語や日本語の手紙を瞬時に翻訳できます。
-                  </p>
-                </div>
-                <Link
-                  href="/premium"
-                  className="inline-block px-6 py-3 bg-gradient-to-r from-orange-500 to-pink-500 hover:opacity-90 text-white rounded-full font-bold text-sm shadow-md transition-all"
-                >
-                  プレミアムプランの詳細を見る
-                </Link>
-              </div>
-            )}
+            <TranslateSection content={letter.content} isPremium={isPremium} />
           </div>
 
           <div className="pt-4 flex justify-end space-x-4">
