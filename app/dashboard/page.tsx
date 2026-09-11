@@ -83,7 +83,11 @@ export default async function DashboardPage() {
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-2xl shadow-sm border border-orange-50 relative">
-                  <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
+                  {/* 配達完了（開封可能）の状態のときだけ通報・ブロックメニューを表示する */}
+                  {isDelivered && (
+                    <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
+                  )}
+
                   <div className="flex items-center mb-4 space-x-4">
                     <div className="text-4xl bg-orange-50 w-16 h-16 flex items-center justify-center rounded-full">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
