@@ -25,7 +25,19 @@ export default function TranslatedLetter({ content, isPremium }: TranslatedLette
     setIsTranslating(true)
     try {
       const result = await translateLetterAction(content)
-      setTranslatedText(result)
+      
+      // バックエンドからエラーが返ってきた場合の処理
+      if (result?.error) {
+        alert(result.error) // APIエラーなどの詳細をアラートで表示
+      } 
+      // 成功した場合の処理
+      else if (result?.data) {
+        setTranslatedText(result.data)
+      } 
+      // 予期せぬ空データの場合
+      else {
+        alert('翻訳結果を取得できませんでした。')
+      }
     } catch (error) {
       console.error('翻訳に失敗しました:', error)
       alert('翻訳に失敗しました。時間をおいて再度お試しください。')
