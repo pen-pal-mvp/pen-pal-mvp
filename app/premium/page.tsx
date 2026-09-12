@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { upgradeSubscriptionAction } from "@/app/actions/paymentActions";
-import { createClient } from "@/utils/supabase/client";
+import { getServerUserId } from "@/app/actions/authActions";
 
 export default function PremiumPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -12,17 +12,17 @@ export default function PremiumPage() {
   const handlePayment = async (method: "line" | "kakao") => {
     setIsLoading(method);
     try {
-      const supabase = createClient();
-      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      // ブラウザのCookieを見に行くのではなく、サーバーに直接ユーザーIDを聞きに行く（制限突破！）
+      const userId = await getServerUserId();
 
-      if (userError || !user) {
+      if (!userId) {
         alert("認証情報が見つかりません。一度ログアウトし、再度ログインしてお試しください。 / 인증 정보를 찾을 수 없습니다. 로그아웃 후 다시 로그인해 주세요.");
         setIsLoading(null);
         return;
       }
 
-      // 取得した user.id をサーバーアクションの第2引数として渡す
-      const result = await upgradeSubscriptionAction(method, user.id);
+      // 取得した確実な userId をサーバーアクションへ渡す
+      const result = await upgradeSubscriptionAction(method, userId);
       
       if (result.success) {
         alert("決済が完了しました！プレミアム会員に昇格しました。 / 결제가 완료되었습니다! 프리미엄 회원이 되었습니다.");
@@ -31,7 +31,6 @@ export default function PremiumPage() {
         alert("サーバーエラー: " + result.error);
       }
     } catch (error: any) {
-      // エラーの正体を完全に特定するために詳細を出力
       alert("通信エラーの詳細: " + error.message);
       console.error("Payment Error:", error);
     } finally {
