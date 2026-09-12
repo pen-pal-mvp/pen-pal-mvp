@@ -3,7 +3,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { upgradeSubscriptionAction } from "@/app/actions/paymentActions";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@supabase/supabase-js";
+
+// コンポーネント外で1回だけ初期化（複数生成の警告を回避）
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function PremiumPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -12,11 +18,10 @@ export default function PremiumPage() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      // @supabase/ssr のクライアントを使って Cookie のセッションを読み取る
-      const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setCurrentUserId(session.user.id);
+      // getSession ではなく、サーバーと通信して確実に現在のユーザーを取得する getUser を使用
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        setCurrentUserId(user.id);
       }
     };
     fetchUser();
