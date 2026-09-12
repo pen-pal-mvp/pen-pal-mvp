@@ -5,19 +5,19 @@ import { useRouter } from "next/navigation";
 import { upgradeSubscriptionAction } from "@/app/actions/paymentActions";
 import { createClient } from "@supabase/supabase-js";
 
+// コンポーネントの外で1度だけ初期化し、複数インスタンス生成の警告を回避
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 export default function PremiumPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
 
-  // ページ読み込み時にユーザーIDを確実に取得して保持する
   useEffect(() => {
     const fetchUser = async () => {
-      const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-      // getUser()ではなく、ローカルのセッション情報を直接読み取るgetSession()を使用
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setCurrentUserId(session.user.id);
@@ -29,14 +29,12 @@ export default function PremiumPage() {
   const handlePayment = async (method: "line" | "kakao") => {
     setIsLoading(method);
     try {
-      // 保持しているユーザーIDが存在しない場合はエラーを出す
       if (!currentUserId) {
         alert("認証情報が見つかりません。一度ログアウトし、再度ログインしてお試しください。 / 인증 정보를 찾을 수 없습니다. 로그아웃 후 다시 로그인해 주세요.");
         setIsLoading(null);
         return;
       }
 
-      // 取得済みの currentUserId をサーバーアクションの第2引数として渡す
       const result = await upgradeSubscriptionAction(method, currentUserId);
       
       if (result.success) {
