@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { upgradeSubscriptionAction } from "@/app/actions/paymentActions";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/utils/supabase/client";
 
 export default function PremiumPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -12,12 +12,7 @@ export default function PremiumPage() {
   const handlePayment = async (method: "line" | "kakao") => {
     setIsLoading(method);
     try {
-      // useEffectでの事前読み込みをやめ、ボタンを押した瞬間にSSRクライアントで「Cookie」から確実にユーザー情報を取得するわ
-      const supabase = createBrowserClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      );
-      
+      const supabase = createClient();
       const { data: { user }, error: userError } = await supabase.auth.getUser();
 
       if (userError || !user) {
@@ -26,17 +21,19 @@ export default function PremiumPage() {
         return;
       }
 
-      // Cookieから取得した確実な user.id をサーバーアクションへ渡す
+      // 取得した user.id をサーバーアクションの第2引数として渡す
       const result = await upgradeSubscriptionAction(method, user.id);
       
       if (result.success) {
         alert("決済が完了しました！プレミアム会員に昇格しました。 / 결제가 완료되었습니다! 프리미엄 회원이 되었습니다.");
         router.push("/dashboard");
       } else {
-        alert(result.error);
+        alert("サーバーエラー: " + result.error);
       }
-    } catch (error) {
-      alert("通信エラーが発生しました。 / 통신 에러가 발생했습니다.");
+    } catch (error: any) {
+      // エラーの正体を完全に特定するために詳細を出力
+      alert("通信エラーの詳細: " + error.message);
+      console.error("Payment Error:", error);
     } finally {
       setIsLoading(null);
     }
