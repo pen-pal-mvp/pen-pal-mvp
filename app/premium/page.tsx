@@ -1,42 +1,33 @@
 "use client";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { upgradeSubscriptionAction } from "@/app/actions/paymentActions";
-import { createClient } from "@supabase/supabase-js";
-
-// コンポーネント外で1回だけ初期化（複数生成の警告を回避）
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { createBrowserClient } from "@supabase/ssr";
 
 export default function PremiumPage() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      // getSession ではなく、サーバーと通信して確実に現在のユーザーを取得する getUser を使用
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setCurrentUserId(user.id);
-      }
-    };
-    fetchUser();
-  }, []);
 
   const handlePayment = async (method: "line" | "kakao") => {
     setIsLoading(method);
     try {
-      if (!currentUserId) {
+      // useEffectでの事前読み込みをやめ、ボタンを押した瞬間にSSRクライアントで「Cookie」から確実にユーザー情報を取得するわ
+      const supabase = createBrowserClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      );
+      
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+
+      if (userError || !user) {
         alert("認証情報が見つかりません。一度ログアウトし、再度ログインしてお試しください。 / 인증 정보를 찾을 수 없습니다. 로그아웃 후 다시 로그인해 주세요.");
         setIsLoading(null);
         return;
       }
 
-      const result = await upgradeSubscriptionAction(method, currentUserId);
+      // Cookieから取得した確実な user.id をサーバーアクションへ渡す
+      const result = await upgradeSubscriptionAction(method, user.id);
       
       if (result.success) {
         alert("決済が完了しました！プレミアム会員に昇格しました。 / 결제가 완료되었습니다! 프리미엄 회원이 되었습니다.");
