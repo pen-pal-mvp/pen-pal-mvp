@@ -40,15 +40,15 @@ export default async function DashboardPage() {
   const { data: reports } = await supabase.from('reports').select('letter_id').eq('reporter_id', user.id)
   const reportedLetterIds = reports?.map(r => r.letter_id) || []
 
+  // ★ 変更点：取得データに `bio` を追加
   let query = supabase
     .from('letters')
-    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
+    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type, bio)')
     .eq('receiver_id', user.id)
     .order('sent_at', { ascending: false })
 
   const { data: allLetters } = await query
 
-  // ブロック関係にあるユーザーからの手紙と、通報済みの手紙を受信箱から物理的に除外
   const letters = allLetters?.filter(letter => 
     !blockedIds.includes(letter.sender_id) && 
     !reportedLetterIds.includes(letter.id)
@@ -87,6 +87,11 @@ export default async function DashboardPage() {
             letters.map((letter) => {
               const deliveryDate = new Date(letter.delivery_at)
               const isDelivered = now >= deliveryDate
+              
+              // MBTIの表示最適化
+              const displayMbti = (letter.sender.avatar_type === '😊' || !letter.sender.avatar_type) 
+                ? '????' 
+                : letter.sender.avatar_type;
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
@@ -94,15 +99,21 @@ export default async function DashboardPage() {
                     <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
                   )}
 
-                  <div className="flex items-center mb-4 space-x-4">
-                    <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
-                      {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
+                  <div className="flex items-start mb-5 space-x-4">
+                    <div className="text-sm font-black text-violet-600 tracking-wider bg-violet-50 w-14 h-14 flex-shrink-0 flex items-center justify-center rounded-full border border-violet-100 mt-1">
+                      {letter.sender.avatar_type === 'deleted' ? '👻' : displayMbti}
                     </div>
-                    <div>
-                      <p className="font-bold text-slate-800 text-lg">{letter.sender.pen_name}</p>
-                      <p className="text-xs text-violet-500 font-bold">{isDelivered ? '配達完了' : '配達中...'}</p>
+                    <div className="flex-1 min-w-0 pr-8 md:pr-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <p className="font-bold text-slate-800 text-lg truncate pr-2">{letter.sender.pen_name}</p>
+                        <p className="text-xs text-violet-500 font-bold whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</p>
+                      </div>
+                      <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                        {letter.sender.bio || '自己紹介はまだありません。'}
+                      </p>
                     </div>
                   </div>
+                  
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-6">
