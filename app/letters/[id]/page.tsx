@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { SafeHtml } from '@/components/SafeHtml'
 
-export default async function LetterViewPage({ params }: { params: { id: string } }) {
+// Next.js 15の仕様に合わせ、paramsをPromiseとして受け取りawaitで展開する
+export default async function LetterViewPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,8 +21,10 @@ export default async function LetterViewPage({ params }: { params: { id: string 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // URLのIDから実際の手紙データを取得
-  const letterId = params.id
+  // URLのパラメータを安全に展開してIDを取得
+  const resolvedParams = await params
+  const letterId = resolvedParams.id
+
   const { data: letter, error } = await supabase
     .from('letters')
     .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
@@ -46,8 +49,11 @@ export default async function LetterViewPage({ params }: { params: { id: string 
     await supabase.from('letters').update({ is_read: true }).eq('id', letterId)
   }
 
-  // ※AI翻訳のバックエンド連携ができるまでのプレースホルダー
   const translatedPlaceholder = "※現在、AI自動翻訳システムは準備中です。\n（今後のアップデートでOpenAIと連携されます）"
+
+  // 送信者が退会しているなどの予期せぬエラーを防ぐ安全対策
+  const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '????')
+  const senderName = letter.sender?.pen_name || '退会したユーザー'
 
   return (
     <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
@@ -62,13 +68,12 @@ export default async function LetterViewPage({ params }: { params: { id: string 
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100">
           
-          {/* 送信者の情報を表示 */}
           <div className="flex items-center space-x-4 border-b border-slate-100 pb-6">
             <div className="text-sm font-black text-violet-600 tracking-wider bg-violet-50 w-14 h-14 flex items-center justify-center rounded-full border border-violet-100">
-              {letter.sender.avatar_type === 'deleted' ? '👻' : (letter.sender.avatar_type || '????')}
+              {senderAvatar}
             </div>
             <div>
-              <p className="font-bold text-slate-800 text-lg">{letter.sender.pen_name} からの手紙</p>
+              <p className="font-bold text-slate-800 text-lg">{senderName} からの手紙</p>
               <p className="text-xs text-slate-400 font-medium">{new Date(letter.sent_at).toLocaleString('ja-JP')} 送信</p>
             </div>
           </div>
@@ -77,9 +82,8 @@ export default async function LetterViewPage({ params }: { params: { id: string 
             <div className="font-bold text-lg mb-3 text-slate-800 flex items-center">
               <span className="mr-2">✉️</span> オリジナル（手紙本文）
             </div>
-            {/* DBから取得した本物のテキストをサニタイズして表示 */}
             <SafeHtml
-              content={letter.content}
+              content={letter.content || ''}
               className="p-6 border border-slate-200 rounded-2xl bg-slate-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap"
             />
           </section>
