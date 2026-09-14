@@ -1,8 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-// default エクスポートに変更し、関数名を proxy に修正
-export default async function proxy(request: NextRequest) {
+// 変更点： default を外し、明確に "proxy" という名前で関数をエクスポートする
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
