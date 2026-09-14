@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
+// default エクスポートに変更し、関数名を proxy に修正
+export default async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -15,9 +16,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          // リクエストのCookieを更新
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          // レスポンスのCookieを更新（これがブラウザに保存される）
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -29,7 +28,6 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // ここでセッションの有効期限をチェックし、切れていれば自動でリフレッシュ＆保存を実行する
   await supabase.auth.getUser()
 
   return supabaseResponse
@@ -37,13 +35,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * 以下のパス以外のすべてのリクエストでミドルウェアを実行する
-     * - _next/static (静的ファイル)
-     * - _next/image (画像最適化)
-     * - favicon.ico (ファビコン)
-     * - 画像などの拡張子
-     */
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
