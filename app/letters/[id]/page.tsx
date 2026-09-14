@@ -71,8 +71,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               {senderAvatar}
             </div>
             <div>
+              {/* 送信者名のみを表示し、時間の要素を完全に排除 */}
               <p className="font-bold text-slate-800 text-xl">{senderName} からの手紙</p>
-              {/* ここにあった送信日時の表示を削除しました */}
             </div>
           </div>
 
