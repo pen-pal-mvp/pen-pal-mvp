@@ -71,59 +71,70 @@ export default async function ProfilePage() {
       <div className="max-w-md mx-auto bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 space-y-8">
         
         <div>
-          <Link href="/dashboard" className="text-violet-500 text-sm hover:text-violet-700 mb-4 inline-block font-bold transition-colors">
+          {/* 戻るリンクを text-sm から text-base に拡大 */}
+          <Link href="/dashboard" className="text-violet-500 text-base hover:text-violet-700 mb-4 inline-block font-bold transition-colors">
             ← ダッシュボードへ戻る
           </Link>
-          <h1 className="text-2xl font-bold text-slate-800">プロフィール設定</h1>
+          {/* タイトルを text-2xl から text-3xl に拡大 */}
+          <h1 className="text-3xl font-bold text-slate-800">プロフィール設定</h1>
         </div>
 
         <form action={updateProfile} className="space-y-6">
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">ペンネーム（最大20文字）</label>
+            {/* ラベルを text-sm から text-lg に拡大 */}
+            <label className="block text-lg font-bold text-slate-700 mb-2">ペンネーム（最大20文字）</label>
+            {/* 入力文字を text-lg に拡大 */}
             <input 
               type="text" 
               name="pen_name" 
               defaultValue={userData?.pen_name || ''} 
               required 
               maxLength={20}
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800"
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 text-lg"
               placeholder="例: 지민"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">MBTI（4文字）</label>
+            {/* ラベルを text-sm から text-lg に拡大 */}
+            <label className="block text-lg font-bold text-slate-700 mb-2">MBTI（4文字）</label>
+            {/* 入力文字を text-2xl から text-3xl に拡大 */}
             <input 
               type="text" 
               name="avatar_type" 
               defaultValue={currentMbti} 
               maxLength={4}
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-2xl font-bold tracking-widest text-center uppercase"
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-3xl font-bold tracking-widest text-center uppercase"
               placeholder="例: ENFP"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">自己紹介（最大160文字）</label>
+            {/* ラベルを text-sm から text-lg に拡大 */}
+            <label className="block text-lg font-bold text-slate-700 mb-2">自己紹介（最大160文字）</label>
+            {/* 入力文字を text-sm から text-lg に拡大 */}
             <textarea 
               name="bio" 
               defaultValue={userData?.bio || ''} 
               maxLength={160}
               rows={4}
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 resize-none text-sm leading-relaxed"
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 resize-none text-lg leading-relaxed"
               placeholder="はじめまして！韓国の文化や言語に興味があります。のんびり手紙交換できたら嬉しいです。"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">メンバーステータス</label>
-            <div className={`p-4 rounded-2xl border font-bold text-sm flex items-center ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+            {/* ラベルを text-sm から text-lg に拡大 */}
+            <label className="block text-lg font-bold text-slate-700 mb-2">メンバーステータス</label>
+            {/* ステータス文字を text-sm から text-lg に拡大 */}
+            <div className={`p-4 rounded-2xl border font-bold text-lg flex items-center ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
               {userData?.is_premium ? '🌟 プレミアム会員' : '無料会員 (基本機能制限なし)'}
             </div>
           </div>
 
           <div className="pt-4">
-            <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-full font-bold shadow-md hover:shadow-lg transition-all">
+            {/* ボタン文字に text-lg を追加 */}
+            <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all">
               保存してダッシュボードへ戻る
             </button>
           </div>
@@ -132,7 +143,8 @@ export default async function ProfilePage() {
         <hr className="border-slate-100" />
 
         <div className="pt-2">
-          <h2 className="text-rose-500 font-bold text-sm mb-3 flex items-center">
+          {/* 危険な操作のタイトルを text-sm から text-lg に拡大 */}
+          <h2 className="text-rose-500 font-bold text-lg mb-3 flex items-center">
             <span className="mr-2">⚠️</span> 危険な操作
           </h2>
           <DeleteAccountForm />
