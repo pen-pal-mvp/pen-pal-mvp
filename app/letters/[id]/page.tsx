@@ -2,10 +2,8 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { SafeHtml } from '@/components/SafeHtml'
 
-// Next.js 15の仕様に合わせ、paramsをPromiseとして受け取りawaitで展開する
-export default async function LetterViewPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function LetterViewPage({ params }: { params: { id: string } }) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,10 +19,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // URLのパラメータを安全に展開してIDを取得
-  const resolvedParams = await params
-  const letterId = resolvedParams.id
-
+  // URLから手紙のIDをシンプルに取得（エラー防止）
+  const letterId = params.id
   const { data: letter, error } = await supabase
     .from('letters')
     .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
@@ -34,7 +30,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
   // 手紙が存在しない、または自分宛てではない場合の防壁
   if (error || !letter || letter.receiver_id !== user.id) {
     return (
-      <div className="min-h-screen bg-slate-50 p-8 flex flex-col items-center justify-center text-center">
+      <div className="min-h-screen bg-slate-50 p-8 flex flex-col items-center justify-center text-center font-sans">
         <div className="text-4xl mb-4">📭</div>
         <p className="text-slate-500 font-bold mb-6">手紙が見つからないか、アクセス権限がありません。</p>
         <Link href="/dashboard" className="text-violet-500 hover:text-violet-700 font-bold transition-colors">
@@ -49,11 +45,9 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     await supabase.from('letters').update({ is_read: true }).eq('id', letterId)
   }
 
-  const translatedPlaceholder = "※現在、AI自動翻訳システムは準備中です。\n（今後のアップデートでOpenAIと連携されます）"
-
-  // 送信者が退会しているなどの予期せぬエラーを防ぐ安全対策
   const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '????')
   const senderName = letter.sender?.pen_name || '退会したユーザー'
+  const translatedPlaceholder = "※現在、AI自動翻訳システムは準備中です。\n（今後のアップデートでOpenAIと連携されます）"
 
   return (
     <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
@@ -82,10 +76,10 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             <div className="font-bold text-lg mb-3 text-slate-800 flex items-center">
               <span className="mr-2">✉️</span> オリジナル（手紙本文）
             </div>
-            <SafeHtml
-              content={letter.content || ''}
-              className="p-6 border border-slate-200 rounded-2xl bg-slate-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap"
-            />
+            {/* SafeHtmlを外し、Reactの標準機能で安全にテキストを表示 */}
+            <div className="p-6 border border-slate-200 rounded-2xl bg-slate-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap break-words">
+              {letter.content}
+            </div>
           </section>
 
           <section>
