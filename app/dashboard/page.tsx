@@ -93,15 +93,15 @@ export default async function DashboardPage() {
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-start mb-5 space-x-5">
-                    <div className="text-base font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-full border border-violet-100 mt-1">
+                    <div className="text-lg font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 flex-shrink-0 flex items-center justify-center rounded-full border border-violet-100 mt-1">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : displayMbti}
                     </div>
                     <div className="flex-1 min-w-0 pr-8 md:pr-0">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="font-bold text-slate-800 text-xl truncate pr-2">{letter.sender.pen_name}</p>
-                        <p className="text-sm text-violet-500 font-bold whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</p>
+                        <p className="font-bold text-slate-800 text-2xl truncate pr-2">{letter.sender.pen_name}</p>
+                        <p className="text-base text-violet-500 font-bold whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</p>
                       </div>
-                      <p className="text-sm text-slate-500 line-clamp-2 leading-relaxed">
+                      <p className="text-base text-slate-500 line-clamp-2 leading-relaxed">
                         {letter.sender.bio || '自己紹介はまだありません。'}
                       </p>
                     </div>
@@ -111,21 +111,21 @@ export default async function DashboardPage() {
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-6">
                         <div className="bg-slate-50 py-8 px-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all text-center">
-                          <span className="text-5xl block mb-4">💌</span>
-                          <p className="text-lg text-slate-700 font-bold mb-2">手紙が届いています</p>
-                          <p className="text-base text-slate-500 mb-5">タップして封筒を開ける</p>
-                          <p className="inline-flex items-center text-base font-bold text-pink-500 bg-pink-50 px-5 py-3 rounded-full group-hover:bg-pink-100 transition-colors">
+                          <span className="text-6xl block mb-4">💌</span>
+                          <p className="text-xl text-slate-700 font-bold mb-2">手紙が届いています</p>
+                          <p className="text-lg text-slate-500 mb-5">タップして封筒を開ける</p>
+                          <p className="inline-flex items-center text-lg font-bold text-pink-500 bg-pink-50 px-5 py-3 rounded-full group-hover:bg-pink-100 transition-colors">
                             手紙を読む（AI翻訳） <span className="ml-2">✨</span>
                           </p>
                         </div>
                       </Link>
-                      <Link className="inline-block border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-6 py-2.5 rounded-full text-base font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
+                      <Link className="inline-block border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-6 py-2.5 rounded-full text-lg font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
                         返信を書く
                       </Link>
                     </div>
                   ) : (
                     <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
-                      <p className="text-base text-slate-500 font-medium">
+                      <p className="text-lg text-slate-500 font-medium">
                         この手紙は {deliveryDate.toLocaleString('ja-JP')} に開封可能になります。
                       </p>
                     </div>
