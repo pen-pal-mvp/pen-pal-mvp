@@ -3,7 +3,9 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function LetterViewPage({ params }: { params: { id: string } }) {
+// Next.js 15の仕様：paramsをPromiseとして受け取る
+export default async function LetterViewPage({ params }: { params: Promise<{ id: string }> }) {
+  // ダッシュボードと完全に同じ、確実なCookieの読み込み
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,8 +21,10 @@ export default async function LetterViewPage({ params }: { params: { id: string 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // URLから手紙のIDをシンプルに取得（エラー防止）
-  const letterId = params.id
+  // ★重要：URLのIDを確実に読み取ってから進む
+  const resolvedParams = await params
+  const letterId = resolvedParams.id
+
   const { data: letter, error } = await supabase
     .from('letters')
     .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
@@ -76,7 +80,6 @@ export default async function LetterViewPage({ params }: { params: { id: string 
             <div className="font-bold text-lg mb-3 text-slate-800 flex items-center">
               <span className="mr-2">✉️</span> オリジナル（手紙本文）
             </div>
-            {/* SafeHtmlを外し、Reactの標準機能で安全にテキストを表示 */}
             <div className="p-6 border border-slate-200 rounded-2xl bg-slate-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap break-words">
               {letter.content}
             </div>
