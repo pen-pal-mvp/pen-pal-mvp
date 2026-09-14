@@ -30,6 +30,7 @@ export default async function ProfilePage() {
     'use server'
     const pen_name = formData.get('pen_name') as string
     const avatar_type = formData.get('avatar_type') as string
+    const bio = formData.get('bio') as string
 
     if (!pen_name || !pen_name.trim()) return
 
@@ -47,8 +48,8 @@ export default async function ProfilePage() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-      // avatar_typeカラムをMBTI保存用として再利用。英字4文字・大文字に変換して保存。
       const mbtiValue = avatar_type ? avatar_type.trim().toUpperCase().substring(0, 4) : '????'
+      const bioValue = bio ? bio.trim().substring(0, 160) : ''
       
       await supabase
         .from('users')
@@ -56,13 +57,13 @@ export default async function ProfilePage() {
           id: user.id,
           pen_name: pen_name.trim().substring(0, 20),
           avatar_type: mbtiValue,
+          bio: bioValue,
         })
     }
     
     redirect('/dashboard')
   }
 
-  // もし既存のデータが絵文字（😊）だったら、プレースホルダーとして空にする
   const currentMbti = (userData?.avatar_type === '😊' || !userData?.avatar_type) ? '' : userData.avatar_type
 
   return (
@@ -99,6 +100,18 @@ export default async function ProfilePage() {
               maxLength={4}
               className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-2xl font-bold tracking-widest text-center uppercase"
               placeholder="例: ENFP"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-slate-700 mb-2">自己紹介（最大160文字）</label>
+            <textarea 
+              name="bio" 
+              defaultValue={userData?.bio || ''} 
+              maxLength={160}
+              rows={4}
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 resize-none text-sm leading-relaxed"
+              placeholder="はじめまして！韓国の文化や言語に興味があります。のんびり手紙交換できたら嬉しいです。"
             />
           </div>
 
