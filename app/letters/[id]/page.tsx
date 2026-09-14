@@ -54,9 +54,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
       <div className="max-w-3xl mx-auto space-y-8">
         
         <div className="flex justify-between items-center px-2">
-          {/* タイトルを text-2xl から text-3xl へ拡大 */}
           <h1 className="text-3xl font-bold text-slate-800">手紙を読む</h1>
-          {/* 戻るリンクを text-sm から text-base へ拡大 */}
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-bold" href="/dashboard">
             ← 受信箱へ戻る
           </Link>
@@ -73,33 +71,27 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               {senderAvatar}
             </div>
             <div>
-              {/* 送信者名を text-lg から text-xl へ拡大 */}
               <p className="font-bold text-slate-800 text-xl">{senderName} からの手紙</p>
-              {/* 日付を text-xs から text-sm へ拡大 */}
-              <p className="text-sm text-slate-400 font-medium">{new Date(letter.sent_at).toLocaleString('ja-JP')} 送信</p>
+              {/* ここにあった送信日時の表示を削除しました */}
             </div>
           </div>
 
           <section>
-            {/* 見出しを text-lg から text-xl へ拡大 */}
             <div className="font-bold text-xl mb-3 text-slate-800 flex items-center">
               <span className="mr-2">✉️</span> オリジナル（手紙本文）
             </div>
-            {/* 本文に text-lg を追加して読みやすく拡大 */}
             <div className="text-lg p-6 border border-slate-200 rounded-2xl bg-slate-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap break-words">
               {letter.content}
             </div>
           </section>
 
           <section>
-            {/* 見出しを text-lg から text-xl へ拡大 */}
             <div className="font-bold text-xl mb-3 flex items-center">
               <span className="mr-2">✨</span> 
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-500">
                 AI自動翻訳
               </span>
             </div>
-            {/* 本文に text-lg を追加して読みやすく拡大 */}
             <div className="text-lg p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap">
               {translatedPlaceholder}
             </div>
