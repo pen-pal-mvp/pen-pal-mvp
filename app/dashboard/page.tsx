@@ -28,7 +28,6 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  // 【強化フィルター】自分がブロックした相手、および自分をブロックした相手の両方を取得
   const { data: blockingData } = await supabase.from('blocks').select('blocked_id').eq('blocker_id', user.id)
   const { data: blockedByData } = await supabase.from('blocks').select('blocker_id').eq('blocked_id', user.id)
 
@@ -40,7 +39,6 @@ export default async function DashboardPage() {
   const { data: reports } = await supabase.from('reports').select('letter_id').eq('reporter_id', user.id)
   const reportedLetterIds = reports?.map(r => r.letter_id) || []
 
-  // ★ 変更点：取得データに `bio` を追加
   let query = supabase
     .from('letters')
     .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type, bio)')
@@ -88,7 +86,6 @@ export default async function DashboardPage() {
               const deliveryDate = new Date(letter.delivery_at)
               const isDelivered = now >= deliveryDate
               
-              // MBTIの表示最適化
               const displayMbti = (letter.sender.avatar_type === '😊' || !letter.sender.avatar_type) 
                 ? '????' 
                 : letter.sender.avatar_type;
@@ -117,12 +114,12 @@ export default async function DashboardPage() {
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-6">
-                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all">
-                          <p className="text-slate-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                            {letter.content}
-                          </p>
-                          <p className="mt-3 text-sm font-bold text-pink-500 flex items-center">
-                            手紙を開く（AI翻訳） <span className="ml-1">✨</span>
+                        <div className="bg-slate-50 py-8 px-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all text-center">
+                          <span className="text-4xl block mb-3">💌</span>
+                          <p className="text-slate-700 font-bold mb-1">手紙が届いています</p>
+                          <p className="text-sm text-slate-500 mb-4">タップして封筒を開ける</p>
+                          <p className="inline-flex items-center text-sm font-bold text-pink-500 bg-pink-50 px-4 py-2 rounded-full group-hover:bg-pink-100 transition-colors">
+                            手紙を読む（AI翻訳） <span className="ml-1">✨</span>
                           </p>
                         </div>
                       </Link>
