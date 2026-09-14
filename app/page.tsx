@@ -8,14 +8,13 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState({ text: '', isError: false })
   const [isEmailSent, setIsEmailSent] = useState(false)
-  const [cooldown, setCooldown] = useState(0) // 連続送信防止タイマー
+  const [cooldown, setCooldown] = useState(0) 
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  // 60秒のカウントダウン処理
   useEffect(() => {
     if (cooldown > 0) {
       const timer = setTimeout(() => setCooldown(cooldown - 1), 1000)
@@ -25,7 +24,7 @@ export default function Home() {
 
   const handleMagicLinkLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (cooldown > 0) return // タイマー動作中は処理しない（フロントエンド防衛）
+    if (cooldown > 0) return 
 
     setLoading(true)
     setMessage({ text: '', isError: false })
@@ -42,55 +41,58 @@ export default function Home() {
       setLoading(false)
     } else {
       setIsEmailSent(true)
-      setCooldown(60) // 送信成功時に60秒のロックをかける
+      setCooldown(60) 
       setLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-800">
       <main className="max-w-4xl mx-auto px-6 py-16 md:py-24 grid md:grid-cols-2 gap-12 items-center">
         
         <div className="space-y-8">
           <div>
-            <h1 className="text-2xl font-bold text-orange-600 mb-2 tracking-wider">韓日ペンパル</h1>
-            <h2 className="text-4xl md:text-5xl font-extrabold text-gray-800 leading-tight">
-              国境を越えた<br/><span className="text-orange-500">温かい手紙交換</span>
+            <h1 className="text-2xl font-bold text-violet-600 mb-2 tracking-wider">韓日ペンパル</h1>
+            <h2 className="text-4xl md:text-5xl font-extrabold leading-tight">
+              国境を越えた<br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-500">
+                温かい手紙交換
+              </span>
             </h2>
           </div>
-          <p className="text-gray-600 text-lg leading-relaxed">
+          <p className="text-slate-600 text-lg leading-relaxed">
             韓国と日本の言葉や文化を学びながら、のんびりと手紙を交換しませんか？デジタルな時代だからこそ、相手を想って書く「手紙」の時間を大切にするプラットフォームです。
           </p>
           <div className="space-y-4">
-            <div className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+            <div className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-violet-200 transition-colors">
               <span className="text-2xl">🕊️</span>
-              <p className="font-medium text-gray-700">自分のペースでのんびりやり取り</p>
+              <p className="font-medium text-slate-700">自分のペースでのんびりやり取り</p>
             </div>
-            <div className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-              <span className="text-2xl">🌏</span>
-              <p className="font-medium text-gray-700">お互いの言語や文化を学び合える</p>
+            <div className="flex items-center space-x-3 bg-white p-4 rounded-xl shadow-sm border border-slate-100 hover:border-pink-200 transition-colors">
+              <span className="text-2xl">✨</span>
+              <p className="font-medium text-slate-700">お互いの好きなカルチャーを語り合う</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-lg border border-gray-100 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-orange-400 to-pink-500"></div>
+        <div className="bg-white p-8 md:p-10 rounded-3xl shadow-xl shadow-violet-100 border border-slate-100 relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-violet-500 to-pink-400"></div>
           
           {isEmailSent ? (
             <div className="text-center space-y-6 animate-fade-in">
               <div className="text-6xl mb-4">💌</div>
-              <h3 className="text-2xl font-bold text-gray-800">メールを送信しました</h3>
-              <p className="text-gray-600 leading-relaxed">
-                <span className="font-bold text-gray-800">{email}</span> 宛に<br/>
+              <h3 className="text-2xl font-bold text-slate-800">メールを送信しました</h3>
+              <p className="text-slate-600 leading-relaxed">
+                <span className="font-bold text-slate-800">{email}</span> 宛に<br/>
                 ログイン用のリンクをお送りしました。<br/>
                 メール内のリンクをタップしてログインしてください。
               </p>
               
-              <div className="bg-orange-50 p-5 rounded-2xl border border-orange-100 mt-6 text-left">
-                <h4 className="font-bold text-orange-900 mb-3 flex items-center">
+              <div className="bg-violet-50 p-5 rounded-2xl border border-violet-100 mt-6 text-left">
+                <h4 className="font-bold text-violet-900 mb-3 flex items-center">
                   <span className="mr-2">💡</span> プレミアム会員ならもっと快適に
                 </h4>
-                <ul className="text-sm text-orange-800 space-y-2 font-medium">
+                <ul className="text-sm text-violet-800 space-y-2 font-medium">
                   <li>・ワンタップで手紙をAI自動翻訳</li>
                   <li>・お気に入りの手紙を無制限に保存</li>
                   <li>・優先的なマッチングサポート</li>
@@ -100,7 +102,7 @@ export default function Home() {
               <div className="pt-4">
                 <button 
                   onClick={() => setIsEmailSent(false)} 
-                  className="text-sm text-gray-400 hover:text-orange-500 transition-colors underline"
+                  className="text-sm text-slate-400 hover:text-violet-600 transition-colors underline"
                 >
                   メールアドレスを入力し直す
                 </button>
@@ -109,8 +111,8 @@ export default function Home() {
           ) : (
             <>
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">ペンパルをはじめる</h3>
-                <p className="text-gray-500 text-sm">まずはメールアドレスで無料登録・ログイン</p>
+                <h3 className="text-2xl font-bold text-slate-800 mb-2">ペンパルをはじめる</h3>
+                <p className="text-slate-500 text-sm">まずはメールアドレスで無料登録・ログイン</p>
               </div>
 
               <form onSubmit={handleMagicLinkLogin} className="space-y-5">
@@ -121,26 +123,26 @@ export default function Home() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="メールアドレスを入力" 
-                    className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-gray-800"
+                    className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800"
                   />
                 </div>
                 <button 
                   type="submit" 
                   disabled={loading || !email || cooldown > 0}
-                  className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-bold text-lg shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {cooldown > 0 ? `再送信まで ${cooldown}秒お待ちください` : loading ? '送信中...' : 'ログインメールを送る'}
                 </button>
 
                 {message.text && (
-                  <div className={`p-4 rounded-xl text-sm font-medium ${message.isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-700 border border-green-100'}`}>
+                  <div className={`p-4 rounded-xl text-sm font-medium ${message.isError ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-emerald-700 border border-green-100'}`}>
                     {message.text}
                   </div>
                 )}
               </form>
 
               <div className="mt-6 text-center">
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-slate-400">
                   ※パスワードは不要です。入力したアドレス宛にログイン用の安全なリンクをお送りします。
                 </p>
               </div>

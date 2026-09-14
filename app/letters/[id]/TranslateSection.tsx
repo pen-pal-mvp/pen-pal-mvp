@@ -34,12 +34,12 @@ export default function TranslateSection({ content, isPremium }: { content: stri
     setIsLoading(true)
     setError(null)
     try {
-      const result = await translateLetterAction(content)
+      const result = await translateLetterAction(content, 'ja')
       
       if (result?.error) {
-        setError(result.error) // サーバーからの本当のエラーメッセージを表示
-      } else if (result?.data) {
-        setTranslatedText(result.data) // 成功時は翻訳結果を表示
+        setError(result.error)
+      } else if (result?.translatedText) {
+        setTranslatedText(result.translatedText)
       } else {
         setError('翻訳結果を取得できませんでした。')
       }

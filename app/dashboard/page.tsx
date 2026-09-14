@@ -28,8 +28,14 @@ export default async function DashboardPage() {
     .eq('id', user.id)
     .single()
 
-  const { data: blocks } = await supabase.from('blocks').select('blocked_id').eq('blocker_id', user.id)
-  const blockedIds = blocks?.map(b => b.blocked_id) || []
+  // 【強化フィルター】自分がブロックした相手、および自分をブロックした相手の両方を取得
+  const { data: blockingData } = await supabase.from('blocks').select('blocked_id').eq('blocker_id', user.id)
+  const { data: blockedByData } = await supabase.from('blocks').select('blocker_id').eq('blocked_id', user.id)
+
+  const blockedIds = [
+    ...(blockingData?.map(b => b.blocked_id) || []),
+    ...(blockedByData?.map(b => b.blocker_id) || [])
+  ]
 
   const { data: reports } = await supabase.from('reports').select('letter_id').eq('reporter_id', user.id)
   const reportedLetterIds = reports?.map(r => r.letter_id) || []
@@ -42,6 +48,7 @@ export default async function DashboardPage() {
 
   const { data: allLetters } = await query
 
+  // ブロック関係にあるユーザーからの手紙と、通報済みの手紙を受信箱から物理的に除外
   const letters = allLetters?.filter(letter => 
     !blockedIds.includes(letter.sender_id) && 
     !reportedLetterIds.includes(letter.id)
@@ -50,21 +57,21 @@ export default async function DashboardPage() {
   const now = new Date()
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-200 pb-4">
-          <h1 className="text-2xl font-bold text-gray-800">受信箱</h1>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
+          <h1 className="text-2xl font-bold text-slate-800">受信箱</h1>
           <div className="flex flex-wrap gap-3 items-center">
-            <Link className="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md transition-colors" href="/users">
+            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md transition-all" href="/users">
               🔍 ペンパルを探す
             </Link>
-            <Link className="text-sm text-gray-600 hover:text-orange-500 font-medium bg-white border border-gray-200 px-4 py-2.5 rounded-full transition-colors" href="/profile">
+            <Link className="text-sm text-slate-600 hover:text-violet-600 font-medium bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all" href="/profile">
               プロフィール・設定
             </Link>
             {!userData?.is_premium && (
-              <Link className="bg-yellow-400 text-yellow-900 px-4 py-2.5 rounded-full text-sm font-bold shadow" href="/premium">
-                プレミアム登録
+              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full text-sm font-bold shadow-md transition-all" href="/premium">
+                ✨ プレミアム登録
               </Link>
             )}
           </div>
@@ -72,9 +79,9 @@ export default async function DashboardPage() {
 
         <div className="space-y-4">
           {letters.length === 0 ? (
-            <div className="bg-white rounded-2xl p-10 text-center border border-gray-100 shadow-sm">
-              <span className="text-4xl block mb-3">📭</span>
-              <p className="text-gray-500">手紙はまだ届いていません。<br/>「ペンパルを探す」から手紙を送ってみましょう！</p>
+            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
+              <span className="text-5xl block mb-4">📭</span>
+              <p className="text-slate-500 leading-relaxed">手紙はまだ届いていません。<br/>「ペンパルを探す」から手紙を送ってみましょう！</p>
             </div>
           ) : (
             letters.map((letter) => {
@@ -82,40 +89,39 @@ export default async function DashboardPage() {
               const isDelivered = now >= deliveryDate
 
               return (
-                <div key={letter.id} className="bg-white p-6 rounded-2xl shadow-sm border border-orange-50 relative">
-                  {/* 配達完了（開封可能）の状態のときだけ通報・ブロックメニューを表示する */}
+                <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   {isDelivered && (
                     <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
                   )}
 
                   <div className="flex items-center mb-4 space-x-4">
-                    <div className="text-4xl bg-orange-50 w-16 h-16 flex items-center justify-center rounded-full">
+                    <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
                     </div>
                     <div>
-                      <p className="font-bold text-gray-800 text-lg">{letter.sender.pen_name}</p>
-                      <p className="text-xs text-orange-500 font-medium">{isDelivered ? '配達完了' : '配達中...'}</p>
+                      <p className="font-bold text-slate-800 text-lg">{letter.sender.pen_name}</p>
+                      <p className="text-xs text-violet-500 font-bold">{isDelivered ? '配達完了' : '配達中...'}</p>
                     </div>
                   </div>
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-6">
-                        <div className="bg-gray-50 p-4 rounded-xl group-hover:bg-orange-50 group-hover:border-orange-200 border border-transparent transition-all">
-                          <p className="text-gray-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
+                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all">
+                          <p className="text-slate-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
                             {letter.content}
                           </p>
-                          <p className="mt-2 text-sm font-bold text-orange-500 flex items-center">
+                          <p className="mt-3 text-sm font-bold text-pink-500 flex items-center">
                             手紙を開く（AI翻訳） <span className="ml-1">✨</span>
                           </p>
                         </div>
                       </Link>
-                      <Link className="inline-block border-2 border-orange-500 text-orange-600 hover:bg-orange-50 px-6 py-2 rounded-full text-sm font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
+                      <Link className="inline-block border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-6 py-2 rounded-full text-sm font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
                         返信を書く
                       </Link>
                     </div>
                   ) : (
-                    <div className="bg-gray-50 p-6 rounded-xl text-center border border-gray-100">
-                      <p className="text-sm text-gray-500 font-medium">
+                    <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
+                      <p className="text-sm text-slate-500 font-medium">
                         この手紙は {deliveryDate.toLocaleString('ja-JP')} に開封可能になります。
                       </p>
                     </div>

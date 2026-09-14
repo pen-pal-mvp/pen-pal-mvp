@@ -1,16 +1,27 @@
 'use server'
 
 import Stripe from 'stripe'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
+import { createServerClient } from '@supabase/ssr'
 
-// 修正1: as any を追加して型エラーを回避
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20' as any,
+  apiVersion: '2026-08-26.dahlia' as any, 
 })
 
 export async function createCheckoutSessionAction() {
   try {
-    // 修正2: await を追加して非同期処理に対応
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { cookies: { getAll() { return cookieStore.getAll() }, setAll() {} } }
+    )
+    
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return { error: '決済へ進むにはログインが必要です。' }
+    }
+
     const headersList = await headers()
     const domain = headersList.get('origin') || 'http://localhost:3000'
 
@@ -23,8 +34,12 @@ export async function createCheckoutSessionAction() {
         },
       ],
       mode: 'subscription',
-      success_url: `${domain}/premium/success`,
+      success_url: `${domain}/dashboard`, // 成功時はダッシュボードへ戻すわ
       cancel_url: `${domain}/premium`,
+      client_reference_id: user.id, 
+      metadata: {
+        userId: user.id, // ★重要: Webhook側が読み取る命綱
+      },
     })
 
     if (!session.url) {

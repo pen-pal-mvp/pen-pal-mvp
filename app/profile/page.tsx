@@ -51,7 +51,6 @@ export default async function ProfilePage() {
         .from('users')
         .upsert({
           id: user.id,
-          // email: user.email はデータベースから消したのでここからも削除しました
           pen_name: pen_name.trim().substring(0, 20),
           avatar_type: avatar_type || '😊',
         })
@@ -61,57 +60,61 @@ export default async function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#faf9f5] p-8 font-sans">
-      <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-100 space-y-8">
+    <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
+      <div className="max-w-md mx-auto bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 space-y-8">
         
         <div>
-          <Link href="/dashboard" className="text-orange-500 text-sm hover:underline mb-4 inline-block font-medium">← ダッシュボードへ戻る</Link>
-          <h1 className="text-2xl font-bold text-gray-800">プロフィール設定</h1>
+          <Link href="/dashboard" className="text-violet-500 text-sm hover:text-violet-700 mb-4 inline-block font-bold transition-colors">
+            ← ダッシュボードへ戻る
+          </Link>
+          <h1 className="text-2xl font-bold text-slate-800">プロフィール設定</h1>
         </div>
 
         <form action={updateProfile} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">ペンネーム（最大20文字）</label>
+            <label className="block text-sm font-bold text-slate-700 mb-2">ペンネーム（最大20文字）</label>
             <input 
               type="text" 
               name="pen_name" 
               defaultValue={userData?.pen_name || ''} 
               required 
               maxLength={20}
-              className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-gray-800"
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800"
               placeholder="例: 지민"
             />
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">アイコン（好きな絵文字を1つ）</label>
+            <label className="block text-sm font-bold text-slate-700 mb-2">アイコン（好きな絵文字を1つ）</label>
             <input 
               type="text" 
               name="avatar_type" 
               defaultValue={userData?.avatar_type || '😊'} 
               maxLength={2}
-              className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all text-3xl text-center"
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-4xl text-center"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">プレミアム状態</label>
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-200 text-gray-500 text-sm font-medium">
-              {userData?.is_premium ? '🌟 プレミアム会員' : '無料会員 (機能制限なし)'}
+            <label className="block text-sm font-bold text-slate-700 mb-2">メンバーステータス</label>
+            <div className={`p-4 rounded-2xl border font-bold text-sm flex items-center ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+              {userData?.is_premium ? '🌟 プレミアム会員' : '無料会員 (基本機能制限なし)'}
             </div>
           </div>
 
-          <div className="pt-2">
-            <button type="submit" className="w-full py-4 bg-orange-500 hover:bg-orange-600 text-white rounded-full font-bold shadow-md transition-colors">
+          <div className="pt-4">
+            <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-full font-bold shadow-md hover:shadow-lg transition-all">
               保存してダッシュボードへ戻る
             </button>
           </div>
         </form>
 
-        <hr className="border-gray-100" />
+        <hr className="border-slate-100" />
 
         <div className="pt-2">
-          <h2 className="text-red-500 font-bold text-sm mb-3">危険な操作</h2>
+          <h2 className="text-rose-500 font-bold text-sm mb-3 flex items-center">
+            <span className="mr-2">⚠️</span> 危険な操作
+          </h2>
           <DeleteAccountForm />
         </div>
 

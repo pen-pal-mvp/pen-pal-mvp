@@ -15,26 +15,21 @@ export default function TranslatedLetter({ content, isPremium }: TranslatedLette
   const [isTranslating, setIsTranslating] = useState(false)
 
   const handleTranslate = async () => {
-    // 通常会員の場合はプレミアム登録ページへ強制リダイレクト
     if (!isPremium) {
       router.push('/premium')
       return
     }
 
-    // プレミアム会員の場合は翻訳アクションを実行
     setIsTranslating(true)
     try {
-      const result = await translateLetterAction(content)
+      const result = await translateLetterAction(content, 'ja')
       
-      // バックエンドからエラーが返ってきた場合の処理
       if (result?.error) {
-        alert(result.error) // APIエラーなどの詳細をアラートで表示
+        alert(result.error)
       } 
-      // 成功した場合の処理
-      else if (result?.data) {
-        setTranslatedText(result.data)
+      else if (result?.translatedText) {
+        setTranslatedText(result.translatedText)
       } 
-      // 予期せぬ空データの場合
       else {
         alert('翻訳結果を取得できませんでした。')
       }
@@ -48,12 +43,10 @@ export default function TranslatedLetter({ content, isPremium }: TranslatedLette
 
   return (
     <div className="space-y-4">
-      {/* 手紙の原文 */}
       <div className="p-5 bg-[#FDFBF7] rounded-xl shadow-sm border border-[#E5E0D8] text-gray-800 whitespace-pre-wrap leading-relaxed font-serif">
         {content}
       </div>
 
-      {/* 翻訳結果（翻訳ボタンが押されて結果が返ってきたら表示） */}
       {translatedText && (
         <div className="relative p-5 bg-blue-50/50 rounded-xl border border-blue-100 text-gray-800 whitespace-pre-wrap leading-relaxed font-serif mt-4">
           <div className="absolute -top-3 left-4 bg-blue-100 text-blue-700 text-xs font-bold px-2 py-1 rounded">
@@ -63,7 +56,6 @@ export default function TranslatedLetter({ content, isPremium }: TranslatedLette
         </div>
       )}
 
-      {/* 翻訳ボタン（まだ翻訳されていない場合のみ表示） */}
       {!translatedText && (
         <button
           onClick={handleTranslate}
