@@ -2,10 +2,10 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import ActionMenu from '@/app/dashboard/ActionMenu' // ★ダッシュボードのメニュー部品をここで呼び出す
 
 // Next.js 15の仕様：paramsをPromiseとして受け取る
 export default async function LetterViewPage({ params }: { params: Promise<{ id: string }> }) {
-  // ダッシュボードと完全に同じ、確実なCookieの読み込み
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +21,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // ★重要：URLのIDを確実に読み取ってから進む
   const resolvedParams = await params
   const letterId = resolvedParams.id
 
@@ -31,7 +30,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     .eq('id', letterId)
     .single()
 
-  // 手紙が存在しない、または自分宛てではない場合の防壁
   if (error || !letter || letter.receiver_id !== user.id) {
     return (
       <div className="min-h-screen bg-slate-50 p-8 flex flex-col items-center justify-center text-center font-sans">
@@ -44,7 +42,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     )
   }
 
-  // 初回開封時に「既読」ステータスへ更新
   if (!letter.is_read) {
     await supabase.from('letters').update({ is_read: true }).eq('id', letterId)
   }
@@ -64,9 +61,16 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
           </Link>
         </div>
 
-        <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100">
+        {/* relativeを追加して右上のボタン位置の基準にする */}
+        <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
-          <div className="flex items-center space-x-4 border-b border-slate-100 pb-6">
+          {/* ★右上に配置されるアクションメニュー（通報・ブロック） */}
+          <div className="absolute top-6 right-6 md:top-8 md:right-8">
+            <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
+          </div>
+
+          {/* ボタンと文字が被らないように pr-24 (右側に余白) を追加 */}
+          <div className="flex items-center space-x-4 border-b border-slate-100 pb-6 pr-24">
             <div className="text-sm font-black text-violet-600 tracking-wider bg-violet-50 w-14 h-14 flex items-center justify-center rounded-full border border-violet-100">
               {senderAvatar}
             </div>

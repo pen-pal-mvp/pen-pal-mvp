@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import ActionMenu from './ActionMenu'
+// ActionMenuのインポートを削除しました
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -92,9 +92,8 @@ export default async function DashboardPage() {
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
-                  {isDelivered && (
-                    <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
-                  )}
+                  
+                  {/* アクションメニューをここから削除しました */}
 
                   <div className="flex items-start mb-5 space-x-4">
                     <div className="text-sm font-black text-violet-600 tracking-wider bg-violet-50 w-14 h-14 flex-shrink-0 flex items-center justify-center rounded-full border border-violet-100 mt-1">
