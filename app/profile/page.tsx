@@ -47,17 +47,23 @@ export default async function ProfilePage() {
 
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
+      // avatar_typeカラムをMBTI保存用として再利用。英字4文字・大文字に変換して保存。
+      const mbtiValue = avatar_type ? avatar_type.trim().toUpperCase().substring(0, 4) : '????'
+      
       await supabase
         .from('users')
         .upsert({
           id: user.id,
           pen_name: pen_name.trim().substring(0, 20),
-          avatar_type: avatar_type || '😊',
+          avatar_type: mbtiValue,
         })
     }
     
     redirect('/dashboard')
   }
+
+  // もし既存のデータが絵文字（😊）だったら、プレースホルダーとして空にする
+  const currentMbti = (userData?.avatar_type === '😊' || !userData?.avatar_type) ? '' : userData.avatar_type
 
   return (
     <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
@@ -85,13 +91,14 @@ export default async function ProfilePage() {
           </div>
           
           <div>
-            <label className="block text-sm font-bold text-slate-700 mb-2">アイコン（好きな絵文字を1つ）</label>
+            <label className="block text-sm font-bold text-slate-700 mb-2">MBTI（4文字）</label>
             <input 
               type="text" 
               name="avatar_type" 
-              defaultValue={userData?.avatar_type || '😊'} 
-              maxLength={2}
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-4xl text-center"
+              defaultValue={currentMbti} 
+              maxLength={4}
+              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-2xl font-bold tracking-widest text-center uppercase"
+              placeholder="例: ENFP"
             />
           </div>
 

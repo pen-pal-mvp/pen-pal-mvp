@@ -44,22 +44,32 @@ export default async function UsersPage() {
               現在、他のユーザーが見つかりません。
             </p>
           ) : (
-            allUsers.map((targetUser) => (
-              <div key={targetUser.id} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-4 hover:shadow-md hover:border-violet-200 transition-all group">
-                <div className="text-6xl bg-violet-50 w-24 h-24 flex items-center justify-center rounded-full border border-violet-100 group-hover:scale-105 transition-transform">
-                  {targetUser.avatar_type || '😊'}
+            allUsers.map((targetUser) => {
+              // 絵文字が残っている場合や未設定の場合は "????" にする
+              const displayMbti = (targetUser.avatar_type === '😊' || !targetUser.avatar_type) 
+                ? '????' 
+                : targetUser.avatar_type;
+
+              return (
+                <div key={targetUser.id} className="bg-white p-8 rounded-3xl shadow-sm border border-slate-100 flex flex-col items-center text-center space-y-4 hover:shadow-md hover:border-violet-200 transition-all group">
+                  
+                  {/* アイコン部分をMBTI表示用に最適化 */}
+                  <div className="text-xl font-black text-violet-600 tracking-wider bg-violet-50 w-24 h-24 flex items-center justify-center rounded-full border border-violet-100 group-hover:scale-105 transition-transform">
+                    {displayMbti}
+                  </div>
+
+                  <div className="font-bold text-slate-800 text-lg">
+                    {targetUser.pen_name || '名無しさん'}
+                  </div>
+                  <Link 
+                    href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
+                    className="w-full py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg text-center"
+                  >
+                    手紙を書く ✨
+                  </Link>
                 </div>
-                <div className="font-bold text-slate-800 text-lg">
-                  {targetUser.pen_name || '名無しさん'}
-                </div>
-                <Link 
-                  href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
-                  className="w-full py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-bold text-sm transition-all shadow-md hover:shadow-lg text-center"
-                >
-                  手紙を書く ✨
-                </Link>
-              </div>
-            ))
+              )
+            })
           )}
         </div>
       </div>
