@@ -32,20 +32,20 @@ export default async function UsersPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         
         <div className="flex justify-between items-center border-b border-slate-200 pb-4">
-          <h1 className="text-3xl font-bold text-slate-800">
-            ペンパルを探す <span className="font-normal text-slate-500">/ 펜팔 찾기</span>
+          <h1 className="text-3xl font-semibold text-slate-800">
+            ペンパルを探す <span className="text-slate-500">/ 펜팔 찾기</span>
           </h1>
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-medium flex flex-col items-end leading-tight gap-1" href="/dashboard">
             <span>← ダッシュボードへ戻る</span>
-            <span className="font-normal">대시보드로 돌아가기</span>
+            <span>대시보드로 돌아가기</span>
           </Link>
         </div>
 
         <div className="space-y-4">
           {(!allUsers || allUsers.length === 0) ? (
-            <p className="text-lg text-slate-500 text-center py-10 bg-white rounded-3xl border border-slate-100 flex flex-col gap-1">
+            <p className="text-lg text-slate-500 font-medium text-center py-10 bg-white rounded-3xl border border-slate-100 flex flex-col gap-1">
               <span>現在、他のユーザーが見つかりません。</span>
-              <span className="font-normal">현재 다른 사용자를 찾을 수 없습니다.</span>
+              <span>현재 다른 사용자를 찾을 수 없습니다.</span>
             </p>
           ) : (
             allUsers.map((targetUser) => {
@@ -62,10 +62,10 @@ export default async function UsersPage() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-slate-800 text-xl mb-2">
+                      <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      <p className="text-base text-slate-500 leading-relaxed whitespace-pre-wrap break-words">
+                      <p className="text-base text-slate-500 font-medium leading-relaxed whitespace-pre-wrap break-words">
                         {targetUser.bio || '自己紹介はまだありません。 / 아직 자기소개가 없습니다.'}
                       </p>
                     </div>
@@ -74,10 +74,10 @@ export default async function UsersPage() {
                   <div className="w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
                     <Link 
                       href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
-                      className="flex flex-col items-center justify-center w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-bold text-lg transition-all shadow-md hover:shadow-lg whitespace-nowrap leading-tight gap-1"
+                      className="flex flex-col items-center justify-center w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-semibold text-lg transition-all shadow-md hover:shadow-lg whitespace-nowrap leading-tight gap-1"
                     >
                       <span>手紙を書く ✨</span>
-                      <span className="font-normal">편지 쓰기</span>
+                      <span>편지 쓰기</span>
                     </Link>
                   </div>
 
