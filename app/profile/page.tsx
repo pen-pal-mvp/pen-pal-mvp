@@ -82,8 +82,9 @@ export default async function ProfilePage() {
 
         <form action={updateProfile} className="space-y-6">
           <div>
+            {/* spanから個別の太さ指定を削除し、親のfont-semiboldを統一して引き継ぐ */}
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              ペンネーム（最大20文字） <span className="text-slate-500 font-medium">/ 닉네임 (최대 20자)</span>
+              ペンネーム（最大20文字） <span className="text-slate-500">/ 닉네임 (최대 20자)</span>
             </label>
             <input 
               type="text" 
@@ -98,7 +99,7 @@ export default async function ProfilePage() {
           
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              MBTI（4文字） <span className="text-slate-500 font-medium">/ MBTI (4자)</span>
+              MBTI（4文字） <span className="text-slate-500">/ MBTI (4자)</span>
             </label>
             <input 
               type="text" 
@@ -112,7 +113,7 @@ export default async function ProfilePage() {
 
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              自己紹介（最大144文字） <span className="text-slate-500 font-medium">/ 자기소개 (최대 144자)</span>
+              自己紹介（最大144文字） <span className="text-slate-500">/ 자기소개 (최대 144자)</span>
             </label>
             <textarea 
               name="bio" 
@@ -126,18 +127,18 @@ export default async function ProfilePage() {
 
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              メンバーステータス <span className="text-slate-500 font-medium">/ 멤버 상태</span>
+              メンバーステータス <span className="text-slate-500">/ 멤버 상태</span>
             </label>
             <div className={`p-4 rounded-2xl border font-semibold text-lg flex flex-col gap-1 ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
               {userData?.is_premium ? (
                 <>
                   <span>🌟 プレミアム会員</span>
-                  <span className="font-medium text-base">프리미엄 회원</span>
+                  <span className="text-base">프리미엄 회원</span>
                 </>
               ) : (
                 <>
                   <span>無料会員 (基本機能制限なし)</span>
-                  <span className="font-medium text-base">무료 회원 (기본 기능 제한 없음)</span>
+                  <span className="text-base">무료 회원 (기본 기능 제한 없음)</span>
                 </>
               )}
             </div>
@@ -146,7 +147,7 @@ export default async function ProfilePage() {
           <div className="pt-4">
             <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-full font-semibold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
               <span>保存してダッシュボードへ戻る</span>
-              <span className="font-medium">저장하고 대시보드로 돌아가기</span>
+              <span>저장하고 대시보드로 돌아가기</span>
             </button>
           </div>
         </form>
@@ -155,7 +156,7 @@ export default async function ProfilePage() {
 
         <div className="pt-2">
           <h2 className="text-rose-500 font-semibold text-lg mb-3 flex items-center gap-2">
-            <span className="mr-1">⚠️</span> 危険な操作 <span className="text-rose-400 font-medium">/ 위험한 작업</span>
+            <span className="mr-1">⚠️</span> 危険な操作 <span className="text-rose-400">/ 위험한 작업</span>
           </h2>
           <DeleteAccountForm />
         </div>

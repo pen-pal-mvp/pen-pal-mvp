@@ -78,8 +78,9 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
+              {/* ここも両方 font-semibold に統一 */}
               <p className="font-semibold text-slate-800 text-xl">{senderName} からの手紙</p>
-              <p className="font-medium text-slate-500 text-base">{senderName}님의 편지</p>
+              <p className="font-semibold text-slate-500 text-base">{senderName}님의 편지</p>
             </div>
           </div>
 
