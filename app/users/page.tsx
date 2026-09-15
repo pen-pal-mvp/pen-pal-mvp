@@ -33,9 +33,9 @@ export default async function UsersPage() {
         
         <div className="flex justify-between items-center border-b border-slate-200 pb-4">
           <h1 className="text-3xl font-semibold text-slate-800">
-            ペンパルを探す <span className="text-slate-500">/ 펜팔 찾기</span>
+            ペンパルを探す / 펜팔 찾기
           </h1>
-          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-medium flex flex-col items-end leading-tight gap-1" href="/dashboard">
+          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1" href="/dashboard">
             <span>← ダッシュボードへ戻る</span>
             <span>대시보드로 돌아가기</span>
           </Link>

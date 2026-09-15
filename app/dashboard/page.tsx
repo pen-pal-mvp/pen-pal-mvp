@@ -59,21 +59,21 @@ export default async function DashboardPage() {
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
           <h1 className="text-3xl font-semibold text-slate-800">
-            受信箱 <span className="text-slate-500">/ 수신함</span>
+            受信箱 / 수신함
           </h1>
           <div className="flex flex-wrap gap-3 items-center">
             <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-base font-semibold shadow-md transition-all flex flex-col items-center leading-tight gap-1" href="/users">
               <span>🔍 ペンパルを探す</span>
-              <span className="opacity-90">펜팔 찾기</span>
+              <span>펜팔 찾기</span>
             </Link>
-            <Link className="text-base text-slate-600 hover:text-violet-600 font-medium bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center leading-tight gap-1" href="/profile">
+            <Link className="text-base text-slate-600 hover:text-violet-600 font-semibold bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center leading-tight gap-1" href="/profile">
               <span>プロフィール・設定</span>
-              <span className="text-slate-400">프로필 설정</span>
+              <span>프로필 설정</span>
             </Link>
             {!userData?.is_premium && (
               <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full text-base font-semibold shadow-md transition-all flex flex-col items-center leading-tight gap-1" href="/premium">
                 <span>✨ プレミアム登録</span>
-                <span className="opacity-90">프리미엄 등록</span>
+                <span>프리미엄 등록</span>
               </Link>
             )}
           </div>
@@ -85,11 +85,11 @@ export default async function DashboardPage() {
               <span className="text-5xl block mb-4">📭</span>
               <p className="text-lg text-slate-700 font-medium leading-relaxed mb-4 flex flex-col gap-1">
                 <span>手紙はまだ届いていません。</span>
-                <span className="text-slate-500">편지가 아직 도착하지 않았습니다.</span>
+                <span>편지가 아직 도착하지 않았습니다.</span>
               </p>
               <p className="text-lg text-slate-700 font-medium leading-relaxed flex flex-col gap-1">
                 <span>「ペンパルを探す」から手紙を送ってみましょう！</span>
-                <span className="text-slate-500">'펜팔 찾기'에서 편지를 보내보세요!</span>
+                <span>'펜팔 찾기'에서 편지를 보내보세요!</span>
               </p>
             </div>
           ) : (
@@ -111,9 +111,9 @@ export default async function DashboardPage() {
                     <div className="flex-1 min-w-0 pr-8 md:pr-0">
                       <div className="flex items-center justify-between mb-2">
                         <p className="font-semibold text-slate-800 text-2xl truncate pr-2">{letter.sender.pen_name}</p>
-                        <div className="text-right flex flex-col gap-1">
-                          <span className="text-base text-violet-500 font-medium whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</span>
-                          <span className="text-base text-violet-400 font-medium whitespace-nowrap">{isDelivered ? '배달 완료' : '배달 중...'}</span>
+                        <div className="text-right flex flex-col gap-1 text-violet-500 font-medium">
+                          <span className="text-base whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</span>
+                          <span className="text-base whitespace-nowrap">{isDelivered ? '배달 완료' : '배달 중...'}</span>
                         </div>
                       </div>
                       <p className="text-base text-slate-500 line-clamp-2 leading-relaxed font-medium">
