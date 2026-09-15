@@ -70,21 +70,20 @@ export default async function ProfilePage() {
     <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
       <div className="max-w-md mx-auto bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 space-y-8">
         
-        <div>
-          <Link href="/dashboard" className="text-violet-500 text-base hover:text-violet-700 mb-4 inline-flex flex-col font-medium transition-colors gap-1">
+        <div className="border-b border-slate-100 pb-4">
+          <Link href="/dashboard" className="text-slate-500 text-base hover:text-violet-600 mb-4 inline-flex flex-col font-semibold transition-colors gap-1">
             <span>← ダッシュボードへ戻る</span>
             <span>대시보드로 돌아가기</span>
           </Link>
           <h1 className="text-3xl font-semibold text-slate-800">
-            プロフィール設定 <span className="text-slate-500">/ 프로필 설정</span>
+            プロフィール設定 / 프로필 설정
           </h1>
         </div>
 
         <form action={updateProfile} className="space-y-6">
           <div>
-            {/* spanから個別の太さ指定を削除し、親のfont-semiboldを統一して引き継ぐ */}
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              ペンネーム（最大20文字） <span className="text-slate-500">/ 닉네임 (최대 20자)</span>
+              ペンネーム（最大20文字） / 닉네임 (최대 20자)
             </label>
             <input 
               type="text" 
@@ -99,7 +98,7 @@ export default async function ProfilePage() {
           
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              MBTI（4文字） <span className="text-slate-500">/ MBTI (4자)</span>
+              MBTI（4文字） / MBTI (4자)
             </label>
             <input 
               type="text" 
@@ -113,7 +112,7 @@ export default async function ProfilePage() {
 
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              自己紹介（最大144文字） <span className="text-slate-500">/ 자기소개 (최대 144자)</span>
+              自己紹介（最大144文字） / 자기소개 (최대 144자)
             </label>
             <textarea 
               name="bio" 
@@ -127,18 +126,16 @@ export default async function ProfilePage() {
 
           <div>
             <label className="block text-lg font-semibold text-slate-700 mb-2">
-              メンバーステータス <span className="text-slate-500">/ 멤버 상태</span>
+              メンバーステータス / 멤버 상태
             </label>
-            <div className={`p-4 rounded-2xl border font-semibold text-lg flex flex-col gap-1 ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+            <div className={`p-4 rounded-2xl border font-semibold text-lg flex flex-col gap-1 ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
               {userData?.is_premium ? (
                 <>
-                  <span>🌟 プレミアム会員</span>
-                  <span className="text-base">프리미엄 회원</span>
+                  <span>🌟 プレミアム会員 / 프리미엄 회원</span>
                 </>
               ) : (
                 <>
-                  <span>無料会員 (基本機能制限なし)</span>
-                  <span className="text-base">무료 회원 (기본 기능 제한 없음)</span>
+                  <span>無料会員 (基本機能制限なし) / 무료 회원 (기본 기능 제한 없음)</span>
                 </>
               )}
             </div>
@@ -156,7 +153,7 @@ export default async function ProfilePage() {
 
         <div className="pt-2">
           <h2 className="text-rose-500 font-semibold text-lg mb-3 flex items-center gap-2">
-            <span className="mr-1">⚠️</span> 危険な操作 <span className="text-rose-400">/ 위험한 작업</span>
+            <span className="mr-1">⚠️</span> 危険な操作 / 위험한 작업
           </h2>
           <DeleteAccountForm />
         </div>

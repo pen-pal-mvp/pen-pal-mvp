@@ -102,7 +102,7 @@ export default function NewLetterPage() {
         
         <div className="flex justify-between items-center px-2 border-b border-slate-200 pb-4">
           <h1 className="text-3xl font-semibold text-slate-800">
-            新しい手紙を書く <span className="text-slate-500">/ 새 편지 쓰기</span>
+            新しい手紙を書く / 새 편지 쓰기
           </h1>
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1" href="/users">
             <span>← キャンセル</span>
