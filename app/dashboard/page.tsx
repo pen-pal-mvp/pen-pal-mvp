@@ -58,17 +58,22 @@ export default async function DashboardPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
-          <h1 className="text-3xl font-bold text-slate-800">受信箱</h1>
+          <h1 className="text-3xl font-bold text-slate-800 flex items-baseline gap-2">
+            受信箱 <span className="text-xl text-slate-500 font-normal">/ 수신함</span>
+          </h1>
           <div className="flex flex-wrap gap-3 items-center">
-            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-base font-bold shadow-md transition-all" href="/users">
-              🔍 ペンパルを探す
+            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-base font-bold shadow-md transition-all flex flex-col items-center leading-tight" href="/users">
+              <span>🔍 ペンパルを探す</span>
+              <span className="text-xs font-normal opacity-90">펜팔 찾기</span>
             </Link>
-            <Link className="text-base text-slate-600 hover:text-violet-600 font-medium bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all" href="/profile">
-              プロフィール・設定
+            <Link className="text-base text-slate-600 hover:text-violet-600 font-medium bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center leading-tight" href="/profile">
+              <span>プロフィール・設定</span>
+              <span className="text-xs font-normal text-slate-400">프로필 설정</span>
             </Link>
             {!userData?.is_premium && (
-              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full text-base font-bold shadow-md transition-all" href="/premium">
-                ✨ プレミアム登録
+              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full text-base font-bold shadow-md transition-all flex flex-col items-center leading-tight" href="/premium">
+                <span>✨ プレミアム登録</span>
+                <span className="text-xs font-normal opacity-90">프리미엄 등록</span>
               </Link>
             )}
           </div>
@@ -78,7 +83,14 @@ export default async function DashboardPage() {
           {letters.length === 0 ? (
             <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
               <span className="text-5xl block mb-4">📭</span>
-              <p className="text-lg text-slate-500 leading-relaxed">手紙はまだ届いていません。<br/>「ペンパルを探す」から手紙を送ってみましょう！</p>
+              <p className="text-lg text-slate-700 font-bold leading-relaxed mb-4">
+                手紙はまだ届いていません。<br/>
+                <span className="text-sm text-slate-500 font-normal">편지가 아직 도착하지 않았습니다.</span>
+              </p>
+              <p className="text-lg text-slate-700 font-bold leading-relaxed">
+                「ペンパルを探す」から手紙を送ってみましょう！<br/>
+                <span className="text-sm text-slate-500 font-normal">'펜팔 찾기'에서 편지를 보내보세요!</span>
+              </p>
             </div>
           ) : (
             letters.map((letter) => {
@@ -99,10 +111,13 @@ export default async function DashboardPage() {
                     <div className="flex-1 min-w-0 pr-8 md:pr-0">
                       <div className="flex items-center justify-between mb-2">
                         <p className="font-bold text-slate-800 text-2xl truncate pr-2">{letter.sender.pen_name}</p>
-                        <p className="text-base text-violet-500 font-bold whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</p>
+                        <div className="text-right flex flex-col">
+                          <span className="text-base text-violet-500 font-bold whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</span>
+                          <span className="text-xs text-violet-400">{isDelivered ? '배달 완료' : '배달 중...'}</span>
+                        </div>
                       </div>
                       <p className="text-base text-slate-500 line-clamp-2 leading-relaxed">
-                        {letter.sender.bio || '自己紹介はまだありません。'}
+                        {letter.sender.bio || '自己紹介はまだありません。 / 아직 자기소개가 없습니다.'}
                       </p>
                     </div>
                   </div>
@@ -112,21 +127,27 @@ export default async function DashboardPage() {
                       <Link href={`/letters/${letter.id}`} className="block group mb-6">
                         <div className="bg-slate-50 py-8 px-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all text-center">
                           <span className="text-6xl block mb-4">💌</span>
-                          <p className="text-xl text-slate-700 font-bold mb-2">手紙が届いています</p>
-                          <p className="text-lg text-slate-500 mb-5">タップして封筒を開ける</p>
-                          <p className="inline-flex items-center text-lg font-bold text-pink-500 bg-pink-50 px-5 py-3 rounded-full group-hover:bg-pink-100 transition-colors">
-                            手紙を読む（AI翻訳） <span className="ml-2">✨</span>
+                          <p className="text-xl text-slate-700 font-bold mb-1">手紙が届いています / 편지가 도착했습니다</p>
+                          <p className="text-lg text-slate-500 mb-5 flex flex-col items-center">
+                            <span>タップして封筒を開ける</span>
+                            <span className="text-sm">탭하여 봉투 열기</span>
+                          </p>
+                          <p className="inline-flex flex-col items-center text-lg font-bold text-pink-500 bg-pink-50 px-8 py-3 rounded-full group-hover:bg-pink-100 transition-colors leading-tight">
+                            <span>手紙を読む（AI翻訳） ✨</span>
+                            <span className="text-sm font-normal">편지 읽기 (AI 번역)</span>
                           </p>
                         </div>
                       </Link>
-                      <Link className="inline-block border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-6 py-2.5 rounded-full text-lg font-bold transition-colors" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
-                        返信を書く
+                      <Link className="inline-block border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-6 py-3 rounded-full text-lg font-bold transition-colors text-center leading-tight" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
+                        <div className="block">返信を書く</div>
+                        <div className="text-xs font-normal">답장 쓰기</div>
                       </Link>
                     </div>
                   ) : (
                     <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
-                      <p className="text-lg text-slate-500 font-medium">
-                        この手紙は {deliveryDate.toLocaleString('ja-JP')} に開封可能になります。
+                      <p className="text-lg text-slate-500 font-medium flex flex-col items-center gap-1">
+                        <span>この手紙は {deliveryDate.toLocaleString('ja-JP')} に開封可能になります。</span>
+                        <span className="text-sm font-normal">이 편지는 {deliveryDate.toLocaleString('ja-JP')}에 열어볼 수 있습니다.</span>
                       </p>
                     </div>
                   )}
