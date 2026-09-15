@@ -111,7 +111,8 @@ export default async function DashboardPage() {
                     <div className="flex-1 min-w-0 pr-8 md:pr-0">
                       <div className="flex items-center justify-between mb-2">
                         <p className="font-semibold text-slate-800 text-2xl truncate pr-2">{letter.sender.pen_name}</p>
-                        <div className="text-right flex flex-col gap-1 text-violet-500 font-medium">
+                        {/* ここを font-medium から font-semibold に変更し、太さを完全に統一 */}
+                        <div className="text-right flex flex-col gap-1 text-violet-500 font-semibold">
                           <span className="text-base whitespace-nowrap">{isDelivered ? '配達完了' : '配達中...'}</span>
                           <span className="text-base whitespace-nowrap">{isDelivered ? '배달 완료' : '배달 중...'}</span>
                         </div>
