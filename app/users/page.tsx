@@ -70,8 +70,8 @@ export default async function UsersPage() {
                       <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      {/* whitespace-pre-wrap を削除し、強制改行を防ぐ */}
-                      <p className="text-base text-slate-500 font-medium leading-relaxed break-words line-clamp-2">
+                      {/* line-clamp-2 を削除し、全文字表示に変更 */}
+                      <p className="text-base text-slate-500 font-medium leading-relaxed break-words">
                         {safeBio}
                       </p>
                     </div>
