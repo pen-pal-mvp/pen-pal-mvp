@@ -52,6 +52,11 @@ export default async function UsersPage() {
               const displayMbti = (targetUser.avatar_type === '😊' || !targetUser.avatar_type) 
                 ? '????' 
                 : targetUser.avatar_type;
+              
+              // 過去のデータに改行が含まれていても、強制的に半角スペースに変換して無効化する
+              const safeBio = targetUser.bio 
+                ? targetUser.bio.replace(/\r?\n/g, ' ') 
+                : '自己紹介はまだありません。 / 아직 자기소개가 없습니다.';
 
               return (
                 <div key={targetUser.id} className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 hover:shadow-md hover:border-violet-200 transition-all">
@@ -65,8 +70,9 @@ export default async function UsersPage() {
                       <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      <p className="text-base text-slate-500 font-medium leading-relaxed whitespace-pre-wrap break-words">
-                        {targetUser.bio || '自己紹介はまだありません。 / 아직 자기소개가 없습니다.'}
+                      {/* whitespace-pre-wrap を削除し、強制改行を防ぐ */}
+                      <p className="text-base text-slate-500 font-medium leading-relaxed break-words line-clamp-2">
+                        {safeBio}
                       </p>
                     </div>
                   </div>
