@@ -70,8 +70,8 @@ export default async function UsersPage() {
                       <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      {/* 144文字が4行以内に収まるよう text-sm (14px) にサイズを調整 */}
-                      <p className="text-sm text-slate-500 font-medium leading-relaxed break-all">
+                      {/* 全文が枠内に収まる最大サイズとして text-base (16px) を適用。break-all で突き破りを防御 */}
+                      <p className="text-base text-slate-500 font-medium leading-relaxed break-all">
                         {safeBio}
                       </p>
                     </div>
