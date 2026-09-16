@@ -59,9 +59,9 @@ export default async function UsersPage() {
                 : '自己紹介はまだありません。 / 아직 자기소개가 없습니다.';
 
               return (
-                <div key={targetUser.id} className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 hover:shadow-md hover:border-violet-200 transition-all">
+                <div key={targetUser.id} className="bg-white p-5 md:p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col gap-5 hover:shadow-md hover:border-violet-200 transition-all">
                   
-                  <div className="flex items-start gap-4 flex-1 w-full">
+                  <div className="flex items-start gap-4 w-full">
                     <div className="text-xl font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 shrink-0 flex items-center justify-center rounded-full border border-violet-100 mt-1">
                       {displayMbti}
                     </div>
@@ -70,17 +70,18 @@ export default async function UsersPage() {
                       <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      {/* line-clamp-2 を削除し、全文字表示に変更 */}
-                      <p className="text-base text-slate-500 font-medium leading-relaxed break-words">
+                      {/* break-all を追加し、スペースのない長文でも強制折り返しさせて枠の突き破りを防ぐ */}
+                      <p className="text-base text-slate-500 font-medium leading-relaxed break-all">
                         {safeBio}
                       </p>
                     </div>
                   </div>
 
-                  <div className="w-full sm:w-auto shrink-0 pt-2 sm:pt-0">
+                  {/* ボタンを横並びではなく下部（右寄せ）に配置し、確実にカード内に収める */}
+                  <div className="w-full flex sm:justify-end pt-1">
                     <Link 
                       href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
-                      className="flex flex-col items-center justify-center w-full sm:w-auto px-8 py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-semibold text-lg transition-all shadow-md hover:shadow-lg whitespace-nowrap leading-tight gap-1"
+                      className="flex flex-col items-center justify-center w-full sm:w-auto px-10 py-3 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-xl font-semibold text-lg transition-all shadow-md hover:shadow-lg whitespace-nowrap leading-tight gap-1"
                     >
                       <span>手紙を書く ✨</span>
                       <span>편지 쓰기</span>
