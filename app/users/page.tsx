@@ -70,14 +70,13 @@ export default async function UsersPage() {
                       <div className="font-semibold text-slate-800 text-xl mb-2">
                         {targetUser.pen_name || '名無しさん'}
                       </div>
-                      {/* break-all を追加し、スペースのない長文でも強制折り返しさせて枠の突き破りを防ぐ */}
-                      <p className="text-base text-slate-500 font-medium leading-relaxed break-all">
+                      {/* 144文字が4行以内に収まるよう text-sm (14px) にサイズを調整 */}
+                      <p className="text-sm text-slate-500 font-medium leading-relaxed break-all">
                         {safeBio}
                       </p>
                     </div>
                   </div>
 
-                  {/* ボタンを横並びではなく下部（右寄せ）に配置し、確実にカード内に収める */}
                   <div className="w-full flex sm:justify-end pt-1">
                     <Link 
                       href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
