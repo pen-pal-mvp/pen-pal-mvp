@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import DeleteAccountForm from './DeleteAccountForm'
+import BioInput from './BioInput'
 
 export default async function ProfilePage() {
   const cookieStore = await cookies()
@@ -49,7 +50,8 @@ export default async function ProfilePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (user) {
       const mbtiValue = avatar_type ? avatar_type.trim().toUpperCase().substring(0, 4) : '????'
-      const bioValue = bio ? bio.trim().substring(0, 144) : ''
+      // サーバー側でも念のため改行を半角スペースに変換して完全ブロック
+      const bioValue = bio ? bio.replace(/\r?\n/g, ' ').trim().substring(0, 144) : ''
       
       await supabase
         .from('users')
@@ -114,14 +116,7 @@ export default async function ProfilePage() {
             <label className="block text-lg font-semibold text-slate-700 mb-2">
               自己紹介（最大144文字） / 자기소개 (최대 144자)
             </label>
-            <textarea 
-              name="bio" 
-              defaultValue={userData?.bio || ''} 
-              maxLength={144}
-              rows={4}
-              className="w-full p-4 bg-slate-50 rounded-2xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 resize-none text-lg font-medium leading-relaxed"
-              placeholder="はじめまして！韓国の文化や言語に興味があります。 / 만나서 반갑습니다! 한국 문화와 언어에 관심이 있습니다."
-            />
+            <BioInput defaultValue={userData?.bio || ''} />
           </div>
 
           <div>
