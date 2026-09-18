@@ -59,29 +59,25 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        {/* ヘッダー部分（3等分レイアウトで中央にボタンを配置） */}
-        <div className="flex flex-col md:flex-row justify-between items-center px-2 border-b border-slate-200 pb-4 gap-4">
+        {/* ヘッダー部分：Flexboxで自然なバランス配置（ド真ん中強制を解除） */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-4 px-2">
           
-          <div className="w-full md:w-1/3 flex justify-center md:justify-start">
-            <h1 className="text-3xl font-semibold text-slate-800 text-center md:text-left">
-              手紙を読む / 편지 읽기
-            </h1>
-          </div>
+          {/* 左：手紙を読む */}
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 text-center md:text-left shrink-0">
+            手紙を読む / 편지 읽기
+          </h1>
           
-          <div className="w-full md:w-1/3 flex justify-center">
-            {/* 翻訳ボタン (UIのみ) */}
-            <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
-              <span className="text-sm font-bold">✨ 翻訳する</span>
-              <span className="text-sm font-bold">번역하기</span>
-            </button>
-          </div>
+          {/* 中央：翻訳ボタン（自然な余白で配置） */}
+          <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
+            <span className="text-sm font-bold">✨ 翻訳する</span>
+            <span className="text-sm font-bold">번역하기</span>
+          </button>
 
-          <div className="w-full md:w-1/3 flex justify-center md:justify-end">
-            <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1" href="/dashboard">
-              <span>← 受信箱へ戻る</span>
-              <span>수신함으로 돌아가기</span>
-            </Link>
-          </div>
+          {/* 右：受信箱へ戻る */}
+          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/dashboard">
+            <span>← 受信箱へ戻る</span>
+            <span>수신함으로 돌아가기</span>
+          </Link>
           
         </div>
 
@@ -105,7 +101,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
-          {/* 下部のボタン配置コンテナ（左にブロック、右に手紙を書く） */}
+          {/* 下部のボタン配置コンテナ */}
           <div className="w-full flex justify-between items-end pt-2">
             <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
 
