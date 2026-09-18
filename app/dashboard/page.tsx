@@ -84,14 +84,18 @@ export default async function DashboardPage() {
               const sentDate = new Date(letter.sent_at)
               const isDelivered = now >= deliveryDate
 
-              // 発送日時を見やすいフォーマットに変換 (例: 2026/09/18 10:53)
-              const formattedSentDate = sentDate.toLocaleString('ja-JP', { 
+              // タイムゾーンを日本/韓国時間（UTC+9）に強制指定してフォーマット
+              const formatOptions: Intl.DateTimeFormatOptions = { 
+                timeZone: 'Asia/Tokyo',
                 year: 'numeric', 
                 month: '2-digit', 
                 day: '2-digit', 
                 hour: '2-digit', 
                 minute: '2-digit' 
-              })
+              }
+              
+              const formattedSentDate = sentDate.toLocaleString('ja-JP', formatOptions)
+              const formattedDeliveryDate = deliveryDate.toLocaleString('ja-JP', formatOptions)
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
@@ -119,7 +123,7 @@ export default async function DashboardPage() {
                   ) : (
                     <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
                       <p className="text-sm text-slate-500 font-medium">
-                        この手紙は {deliveryDate.toLocaleString('ja-JP')} に開封可能になります。
+                        この手紙は {formattedDeliveryDate} に開封可能になります。
                       </p>
                     </div>
                   )}
