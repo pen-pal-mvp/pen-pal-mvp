@@ -37,8 +37,7 @@ export default async function DashboardPage() {
     ...(blockedByData?.map(b => b.blocker_id) || [])
   ]
 
-  const { data: reports } = await supabase.from('reports').select('letter_id').eq('reporter_id', user.id)
-  const reportedLetterIds = reports?.map(r => r.letter_id) || []
+  // ※通報データの取得ロジックは削除済み
 
   let query = supabase
     .from('letters')
@@ -48,10 +47,9 @@ export default async function DashboardPage() {
 
   const { data: allLetters } = await query
 
-  // ブロック関係にあるユーザーからの手紙と、通報済みの手紙を受信箱から物理的に除外
+  // ブロック関係にあるユーザーからの手紙を除外
   const letters = allLetters?.filter(letter => 
-    !blockedIds.includes(letter.sender_id) && 
-    !reportedLetterIds.includes(letter.id)
+    !blockedIds.includes(letter.sender_id)
   ) || []
 
   const now = new Date()
