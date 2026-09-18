@@ -3,7 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string }> }) {
+export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string, error?: string }> }) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,19 +22,29 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
   const resolvedSearchParams = await searchParams
   const receiverId = resolvedSearchParams.to
   const receiverName = resolvedSearchParams.name || 'ユーザー'
+  // ★ エラーメッセージを受け取るための変数を追加
+  const errorMessage = resolvedSearchParams.error
 
   if (!receiverId) redirect('/users')
 
   async function sendLetter(formData: FormData) {
     'use server'
     const rawContent = formData.get('content') as string
-    // ★ 修正：隠しフィールドから宛先IDを確実に受け取る
     const targetId = formData.get('receiverId') as string
+    const targetName = formData.get('receiverName') as string
     
-    if (!rawContent || !rawContent.trim() || !targetId) return
+    // ★ 空白のみ、または未入力の場合はエラーメッセージを出して画面を戻す
+    if (!rawContent || !rawContent.trim() || !targetId) {
+      redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
+    }
 
     let safeContent = rawContent.substring(0, 800)
     safeContent = safeContent.replace(/\r?\n{3,}/g, '\n\n').trim()
+
+    // 圧縮処理の結果、完全に空っぽになってしまった場合もブロック
+    if (!safeContent) {
+      redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
+    }
 
     const cookieStore = await cookies()
     const actionSupabase = createServerClient(
@@ -54,8 +64,8 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
     const now = new Date()
     const deliveryAt = new Date(now.getTime() + 3 * 60000)
 
-    // ★ 修正：受け取った targetId を使って確実にデータベースへ保存
-    await actionSupabase.from('letters').insert({
+    // ★ Supabaseからのエラーを監視する
+    const { error } = await actionSupabase.from('letters').insert({
       sender_id: actionUser.id,
       receiver_id: targetId,
       content: safeContent,
@@ -64,6 +74,13 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
       delivery_at: deliveryAt.toISOString(),
     })
 
+    // ★ もしデータベース側で何らかのエラー（容量オーバー等）が起きたら、サイレント失敗させずに警告を出す
+    if (error) {
+      console.error('送信エラー:', error.message)
+      redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=db`)
+    }
+
+    // すべて正常ならダッシュボードへ
     redirect('/dashboard')
   }
 
@@ -80,8 +97,23 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
         </div>
 
         <form action={sendLetter} className="space-y-6">
-          {/* ★ 修正：ユーザーには見えない宛先IDの入力欄を設置 */}
           <input type="hidden" name="receiverId" value={receiverId} />
+          {/* 名前が消えないように隠しフィールドに追加 */}
+          <input type="hidden" name="receiverName" value={receiverName} />
+
+          {/* ★ エラーが発生した時の赤いアナウンス（警告文） */}
+          {errorMessage === 'empty' && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 font-bold text-sm text-center flex flex-col gap-1">
+              <span>⚠️ 内容が空白、または不自然な文字のためブロックされました。</span>
+              <span className="text-xs">내용이 비어 있거나 부자연스러운 문자로 인해 차단되었습니다.</span>
+            </div>
+          )}
+          {errorMessage === 'db' && (
+            <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 font-bold text-sm text-center flex flex-col gap-1">
+              <span>⚠️ サーバーエラーにより送信できませんでした。内容を見直してください。</span>
+              <span className="text-xs">서버 오류로 인해 전송할 수 없습니다. 내용을 다시 확인해 주세요.</span>
+            </div>
+          )}
 
           <div className="bg-violet-50 text-violet-700 p-4 rounded-2xl border border-violet-100 flex flex-col gap-1 font-semibold">
             <span>🕊️ 宛先: {receiverName}</span>
