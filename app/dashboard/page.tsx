@@ -77,18 +77,18 @@ export default async function DashboardPage() {
 
         <div className="space-y-4">
           {letters.length === 0 ? (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm flex flex-col items-center gap-1.5">
+            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm flex flex-col items-center gap-2">
               <span className="text-5xl block mb-4">📭</span>
-              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+              <p className="text-slate-500 leading-relaxed text-lg font-medium text-center">
                 手紙はまだ届いていません。
               </p>
-              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+              <p className="text-slate-500 leading-relaxed text-lg font-medium text-center">
                 편지가 아직 도착하지 않았습니다.
               </p>
-              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center mt-2">
+              <p className="text-slate-500 leading-relaxed text-lg font-medium text-center mt-3">
                 「ペンパルを探す」から手紙を送ってみましょう！
               </p>
-              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+              <p className="text-slate-500 leading-relaxed text-lg font-medium text-center">
                 '펜팔 찾기'에서 편지를 보내보세요!
               </p>
             </div>
@@ -113,13 +113,13 @@ export default async function DashboardPage() {
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
-                  <div className="flex items-center mb-4 space-x-4">
-                    <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100 shrink-0">
+                  <div className="flex items-center mb-5 space-x-4">
+                    <div className="text-5xl bg-violet-50 w-20 h-20 flex items-center justify-center rounded-full border border-violet-100 shrink-0">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-slate-800 text-lg truncate">{letter.sender.pen_name}</p>
-                      <p className="text-xs text-violet-500 font-bold mt-1">
+                      <p className="font-bold text-slate-800 text-xl truncate">{letter.sender.pen_name}</p>
+                      <p className="text-base text-violet-500 font-bold mt-1">
                         {isDelivered ? '配達完了 / 배달 완료' : '配達中... / 배달 중...'}
                       </p>
                     </div>
@@ -127,20 +127,20 @@ export default async function DashboardPage() {
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-2">
-                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all flex justify-between items-center gap-4">
-                          <p className="text-sm font-medium text-slate-600 group-hover:text-violet-700 transition-colors">
-                            発送日時 / 발송 일시: {formattedSentDate}
+                        <div className="bg-slate-50 p-6 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all flex justify-between items-center gap-4">
+                          <p className="text-lg font-medium text-slate-700 group-hover:text-violet-800 transition-colors">
+                            発送日時 / 발송 일시: <br className="sm:hidden" />{formattedSentDate}
                           </p>
-                          <span className="text-violet-400 group-hover:text-violet-600 font-bold text-xl shrink-0">→</span>
+                          <span className="text-violet-400 group-hover:text-violet-600 font-bold text-3xl shrink-0">→</span>
                         </div>
                       </Link>
                     </div>
                   ) : (
-                    <div className="bg-slate-50 p-5 rounded-2xl text-center border border-slate-100 flex flex-col gap-1.5">
-                      <p className="text-sm text-slate-600 font-medium">
+                    <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100 flex flex-col gap-2">
+                      <p className="text-lg text-slate-700 font-medium">
                         この手紙は {formattedDeliveryDate} に開封可能になります。
                       </p>
-                      <p className="text-sm text-slate-600 font-medium">
+                      <p className="text-lg text-slate-700 font-medium">
                         이 편지는 {formattedDeliveryDate}에 열어볼 수 있습니다.
                       </p>
                     </div>
