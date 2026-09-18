@@ -37,8 +37,6 @@ export default async function DashboardPage() {
     ...(blockedByData?.map(b => b.blocker_id) || [])
   ]
 
-  // ※通報データの取得ロジックは削除済み
-
   let query = supabase
     .from('letters')
     .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
@@ -88,10 +86,7 @@ export default async function DashboardPage() {
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
-                  {isDelivered && (
-                    <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
-                  )}
-
+                  
                   <div className="flex items-center mb-4 space-x-4">
                     <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
@@ -114,7 +109,10 @@ export default async function DashboardPage() {
                         </div>
                       </Link>
                       
-                      <div className="w-full flex justify-end">
+                      {/* 下部のボタン配置コンテナ（左にブロック、右に手紙を書く） */}
+                      <div className="w-full flex justify-between items-end mt-2">
+                        <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
+
                         <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
                           <span>手紙を書く ✨</span>
                           <span>편지 쓰기</span>
