@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import ActionMenu from './ActionMenu'
 
 export default async function DashboardPage() {
   const cookieStore = await cookies()
@@ -98,7 +97,7 @@ export default async function DashboardPage() {
                   </div>
                   {isDelivered ? (
                     <div>
-                      <Link href={`/letters/${letter.id}`} className="block group mb-6">
+                      <Link href={`/letters/${letter.id}`} className="block group mb-2">
                         <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all">
                           <p className="text-slate-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
                             {letter.content}
@@ -108,17 +107,6 @@ export default async function DashboardPage() {
                           </p>
                         </div>
                       </Link>
-                      
-                      {/* 下部のボタン配置コンテナ（左にブロック、右に手紙を書く） */}
-                      <div className="w-full flex justify-between items-end mt-2">
-                        <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
-
-                        <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
-                          <span>手紙を書く ✨</span>
-                          <span>편지 쓰기</span>
-                        </Link>
-                      </div>
-
                     </div>
                   ) : (
                     <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
