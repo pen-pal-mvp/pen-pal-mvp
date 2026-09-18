@@ -49,28 +49,46 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     await supabase.from('letters').update({ is_read: true }).eq('id', letterId)
   }
 
-  const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '????')
+  const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '😊')
   const senderName = letter.sender?.pen_name || '退会したユーザー'
-  const translatedPlaceholder = "※現在、AI自動翻訳システムは準備中です。\n（今後のアップデートでOpenAIと連携されます）\n\n※현재 AI 자동 번역 시스템은 준비 중입니다.\n(향후 업데이트에서 OpenAI와 연동될 예정입니다)"
+  
+  // 英字（MBTI等）か絵文字かの自動判別
+  const isTextAvatar = /^[a-zA-Z0-9]+$/.test(senderAvatar)
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        <div className="flex justify-between items-center px-2 border-b border-slate-200 pb-4">
-          <h1 className="text-3xl font-semibold text-slate-800">
-            手紙を読む / 편지 읽기
-          </h1>
-          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1" href="/dashboard">
-            <span>← 受信箱へ戻る</span>
-            <span>수신함으로 돌아가기</span>
-          </Link>
+        {/* ヘッダー部分（3等分レイアウトで中央にボタンを配置） */}
+        <div className="flex flex-col md:flex-row justify-between items-center px-2 border-b border-slate-200 pb-4 gap-4">
+          
+          <div className="w-full md:w-1/3 flex justify-center md:justify-start">
+            <h1 className="text-3xl font-semibold text-slate-800 text-center md:text-left">
+              手紙を読む / 편지 읽기
+            </h1>
+          </div>
+          
+          <div className="w-full md:w-1/3 flex justify-center">
+            {/* 翻訳ボタン (UIのみ) */}
+            <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
+              <span className="text-sm font-bold">✨ 翻訳する</span>
+              <span className="text-sm font-bold">번역하기</span>
+            </button>
+          </div>
+
+          <div className="w-full md:w-1/3 flex justify-center md:justify-end">
+            <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1" href="/dashboard">
+              <span>← 受信箱へ戻る</span>
+              <span>수신함으로 돌아가기</span>
+            </Link>
+          </div>
+          
         </div>
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
           <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
-            <div className="text-base font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
+            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-lg font-black text-violet-600 tracking-widest' : 'text-4xl'}`}>
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
