@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import TextAreaWithCount from './TextAreaWithCount' // ★ 新しく作った部品を読み込む
+import TextAreaWithCount from './TextAreaWithCount'
 
 export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string, error?: string }> }) {
   const cookieStore = await cookies()
@@ -37,8 +37,20 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
     }
 
-    let safeContent = rawContent.substring(0, 800)
-    safeContent = safeContent.replace(/\r?\n{3,}/g, '\n\n').trim()
+    // サーバー側でも言語ごとのバイト制限（上限2400）を適用
+    let validStr = '';
+    let currentSize = 0;
+    for (let i = 0; i < rawContent.length; i++) {
+      const charSize = rawContent.charCodeAt(i) <= 255 ? 1 : 6;
+      if (currentSize + charSize <= 2400) {
+        validStr += rawContent[i];
+        currentSize += charSize;
+      } else {
+        break;
+      }
+    }
+
+    let safeContent = validStr.replace(/\r?\n{3,}/g, '\n\n').trim()
 
     if (!safeContent) {
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
@@ -113,7 +125,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
             <span>받는 사람: {receiverName}</span>
           </div>
 
-          {/* ★ ここで先ほど作ったリアルタイムカウント付きの入力欄を呼び出します */}
           <TextAreaWithCount />
 
           <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-2xl font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
