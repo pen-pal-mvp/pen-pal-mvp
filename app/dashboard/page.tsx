@@ -110,12 +110,17 @@ export default async function DashboardPage() {
               const formattedSentDate = sentDate.toLocaleString('ja-JP', formatOptions)
               const formattedDeliveryDate = deliveryDate.toLocaleString('ja-JP', formatOptions)
 
+              // MBTI（英数字）と絵文字を自動判別
+              const rawAvatar = letter.sender.avatar_type || '😊'
+              const avatar = rawAvatar === 'deleted' ? '👻' : rawAvatar
+              const isTextAvatar = /^[a-zA-Z0-9]+$/.test(avatar)
+
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-5 space-x-4">
-                    <div className="text-5xl bg-violet-50 w-20 h-20 flex items-center justify-center rounded-full border border-violet-100 shrink-0">
-                      {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
+                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-2xl font-black text-violet-600 tracking-widest' : 'text-5xl'}`}>
+                      {avatar}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-slate-800 text-xl truncate">{letter.sender.pen_name}</p>
