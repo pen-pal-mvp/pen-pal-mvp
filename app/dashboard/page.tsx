@@ -115,10 +115,15 @@ export default async function DashboardPage() {
                           </p>
                         </div>
                       </Link>
-                      <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
-                        <span>手紙を書く ✨</span>
-                        <span>편지 쓰기</span>
-                      </Link>
+                      
+                      {/* ボタンを右端に寄せるためのコンテナ（w-full flex justify-end）を追加 */}
+                      <div className="w-full flex justify-end">
+                        <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
+                          <span>手紙を書く ✨</span>
+                          <span>편지 쓰기</span>
+                        </Link>
+                      </div>
+
                     </div>
                   ) : (
                     <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
