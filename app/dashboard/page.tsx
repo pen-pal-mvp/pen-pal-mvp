@@ -58,15 +58,18 @@ export default async function DashboardPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
           <h1 className="text-2xl font-bold text-slate-800">受信箱 / 받은 편지함</h1>
           <div className="flex flex-wrap gap-3 items-center">
-            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md transition-all" href="/users">
-              🔍 ペンパルを探す
+            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/users">
+              <span className="text-sm font-bold">🔍 ペンパルを探す</span>
+              <span className="text-sm font-bold">펜팔 찾기</span>
             </Link>
-            <Link className="text-sm text-slate-600 hover:text-violet-600 font-medium bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all" href="/profile">
-              プロフィール・設定
+            <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
+              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
+              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">프로필·설정</span>
             </Link>
             {!userData?.is_premium && (
-              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full text-sm font-bold shadow-md transition-all" href="/premium">
-                ✨ プレミアム登録
+              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/premium">
+                <span className="text-sm font-bold">✨ プレミアム登録</span>
+                <span className="text-sm font-bold">프리미엄 등록</span>
               </Link>
             )}
           </div>
@@ -74,9 +77,20 @@ export default async function DashboardPage() {
 
         <div className="space-y-4">
           {letters.length === 0 ? (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm">
+            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-sm flex flex-col items-center gap-1.5">
               <span className="text-5xl block mb-4">📭</span>
-              <p className="text-slate-500 leading-relaxed">手紙はまだ届いていません。<br/>「ペンパルを探す」から手紙を送ってみましょう！</p>
+              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+                手紙はまだ届いていません。
+              </p>
+              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+                편지가 아직 도착하지 않았습니다.
+              </p>
+              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center mt-2">
+                「ペンパルを探す」から手紙を送ってみましょう！
+              </p>
+              <p className="text-slate-500 leading-relaxed text-sm font-medium text-center">
+                '펜팔 찾기'에서 편지를 보내보세요!
+              </p>
             </div>
           ) : (
             letters.map((letter) => {
@@ -84,7 +98,6 @@ export default async function DashboardPage() {
               const sentDate = new Date(letter.sent_at)
               const isDelivered = now >= deliveryDate
 
-              // タイムゾーンを日本/韓国時間（UTC+9）に強制指定してフォーマット
               const formatOptions: Intl.DateTimeFormatOptions = { 
                 timeZone: 'Asia/Tokyo',
                 year: 'numeric', 
@@ -101,29 +114,34 @@ export default async function DashboardPage() {
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-4 space-x-4">
-                    <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
+                    <div className="text-4xl bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100 shrink-0">
                       {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
                     </div>
-                    <div>
-                      <p className="font-bold text-slate-800 text-lg">{letter.sender.pen_name}</p>
-                      <p className="text-xs text-violet-500 font-bold">{isDelivered ? '配達完了' : '配達中...'}</p>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-slate-800 text-lg truncate">{letter.sender.pen_name}</p>
+                      <p className="text-xs text-violet-500 font-bold mt-1">
+                        {isDelivered ? '配達完了 / 배달 완료' : '配達中... / 배달 중...'}
+                      </p>
                     </div>
                   </div>
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-2">
-                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all flex justify-between items-center">
+                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all flex justify-between items-center gap-4">
                           <p className="text-sm font-medium text-slate-600 group-hover:text-violet-700 transition-colors">
-                            発送日時: {formattedSentDate}
+                            発送日時 / 발송 일시: {formattedSentDate}
                           </p>
-                          <span className="text-violet-400 group-hover:text-violet-600 font-bold">→</span>
+                          <span className="text-violet-400 group-hover:text-violet-600 font-bold text-xl shrink-0">→</span>
                         </div>
                       </Link>
                     </div>
                   ) : (
-                    <div className="bg-slate-50 p-6 rounded-2xl text-center border border-slate-100">
-                      <p className="text-sm text-slate-500 font-medium">
+                    <div className="bg-slate-50 p-5 rounded-2xl text-center border border-slate-100 flex flex-col gap-1.5">
+                      <p className="text-sm text-slate-600 font-medium">
                         この手紙は {formattedDeliveryDate} に開封可能になります。
+                      </p>
+                      <p className="text-sm text-slate-600 font-medium">
+                        이 편지는 {formattedDeliveryDate}에 열어볼 수 있습니다.
                       </p>
                     </div>
                   )}
