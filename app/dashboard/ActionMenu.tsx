@@ -8,14 +8,15 @@ export default function ActionMenu({ letterId, senderId }: { letterId: string, s
       <form action={blockUser.bind(null, senderId)}>
         <button 
           type="submit" 
-          className="text-xs font-medium text-slate-400 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-3 py-1.5 rounded-lg bg-white shadow-sm cursor-pointer transition-all"
+          className="inline-flex flex-col items-center justify-center border-2 border-rose-400 text-rose-600 hover:bg-rose-50 px-6 py-1.5 rounded-xl text-xs font-bold transition-colors leading-tight gap-1 shadow-sm"
           onClick={(e) => {
             if(!confirm('このユーザーをブロックしますか？今後、この相手からの手紙は届かなくなります。')) {
               e.preventDefault()
             }
           }}
         >
-          ブロック
+          <span>ブロック 🚫</span>
+          <span>차단</span>
         </button>
       </form>
     </div>
