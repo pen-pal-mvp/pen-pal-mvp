@@ -3,7 +3,8 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function NewLetterPage({ searchParams }: { searchParams: { to?: string, name?: string } }) {
+// Next.js 15の仕様に合わせ、searchParamsをPromiseとして受け取る
+export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string }> }) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -19,9 +20,10 @@ export default async function NewLetterPage({ searchParams }: { searchParams: { 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // URLから宛先のIDと名前を取得
-  const receiverId = searchParams.to
-  const receiverName = searchParams.name || 'ユーザー'
+  // パラメータを展開して取得
+  const resolvedSearchParams = await searchParams
+  const receiverId = resolvedSearchParams.to
+  const receiverName = resolvedSearchParams.name || 'ユーザー'
 
   if (!receiverId) redirect('/users')
 
@@ -30,15 +32,11 @@ export default async function NewLetterPage({ searchParams }: { searchParams: { 
     const rawContent = formData.get('content') as string
     if (!rawContent || !rawContent.trim()) return
 
-    // 【防護フィルター1】最大文字数を800文字に制限（サーバー側でも強制カットし、すり抜けを防止）
     let safeContent = rawContent.substring(0, 800)
-    
-    // 【防護フィルター2】連続する不自然な改行（3つ以上）を2つ（通常の段落空け）に強制圧縮
-    // これにより、縦に異常に長い空白スパムやアスキーアートを破壊して無効化します
     safeContent = safeContent.replace(/\r?\n{3,}/g, '\n\n').trim()
 
     const cookieStore = await cookies()
-    const supabase = createServerClient(
+    const actionSupabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
@@ -49,14 +47,16 @@ export default async function NewLetterPage({ searchParams }: { searchParams: { 
       }
     )
 
-    const { data: { currentUser } } = await supabase.auth.getUser()
-    
+    // ★ 修正箇所: 正しいプロパティ名(user)で取得し、nullチェックを追加
+    const { data: { user: actionUser } } = await actionSupabase.auth.getUser()
+    if (!actionUser) return
+
     const now = new Date()
-    // 配達時間を送信の「3分後」に設定（過去のデータベース設定を参照）
     const deliveryAt = new Date(now.getTime() + 3 * 60000)
 
-    await supabase.from('letters').insert({
-      sender_id: user.id,
+    // ★ 修正箇所: nullチェックを通過した actionUser.id を使用
+    await actionSupabase.from('letters').insert({
+      sender_id: actionUser.id,
       receiver_id: receiverId,
       content: safeContent,
       is_read: false,
@@ -86,10 +86,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: { 
           </div>
 
           <div className="relative group">
-            {/* 
-              【防護フィルター1（画面側）】maxLength={800} で入力自体をブロック
-              【防護フィルター3】break-all を追加し、スペースのない異常な連続文字を強制的に折り返し
-            */}
             <textarea
               name="content"
               required
@@ -99,7 +95,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: { 
               placeholder="ここに手紙の本文を書いてください。のんびり、思いを込めて...&#13;&#10;여기에 편지 본문을 작성해 주세요. 여유를 가지고 마음을 담아서..."
             ></textarea>
             
-            {/* 文字数制限の案内を表示 */}
             <div className="absolute bottom-4 right-6 text-xs font-bold text-slate-400 pointer-events-none">
               最大 800文字 / 최대 800자
             </div>
