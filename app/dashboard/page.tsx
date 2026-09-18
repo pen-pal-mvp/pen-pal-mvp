@@ -99,10 +99,7 @@ export default async function DashboardPage() {
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-2">
                         <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all">
-                          <p className="text-slate-700 whitespace-pre-wrap leading-relaxed line-clamp-3">
-                            {letter.content}
-                          </p>
-                          <p className="mt-3 text-sm font-bold text-pink-500 flex items-center">
+                          <p className="text-sm font-bold text-pink-500 flex items-center">
                             手紙を開く（AI翻訳） <span className="ml-1">✨</span>
                           </p>
                         </div>
