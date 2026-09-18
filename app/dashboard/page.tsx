@@ -61,7 +61,7 @@ export default async function DashboardPage() {
       <div className="max-w-3xl mx-auto space-y-8">
         
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
-          <h1 className="text-2xl font-bold text-slate-800">受信箱</h1>
+          <h1 className="text-2xl font-bold text-slate-800">受信箱 / 받은 편지함</h1>
           <div className="flex flex-wrap gap-3 items-center">
             <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-md transition-all" href="/users">
               🔍 ペンパルを探す
@@ -116,7 +116,6 @@ export default async function DashboardPage() {
                         </div>
                       </Link>
                       
-                      {/* ボタンを右端に寄せるためのコンテナ（w-full flex justify-end）を追加 */}
                       <div className="w-full flex justify-end">
                         <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(letter.sender.pen_name)}`}>
                           <span>手紙を書く ✨</span>
