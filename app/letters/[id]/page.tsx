@@ -69,11 +69,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
-          <div className="absolute top-6 right-6 md:top-8 md:right-8">
-            <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
-          </div>
-
-          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6 pr-24">
+          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
             <div className="text-base font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
               {senderAvatar}
             </div>
@@ -90,6 +86,11 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               {letter.content}
             </div>
           </section>
+
+          {/* ブロックボタンを左下に配置 */}
+          <div className="pt-2 flex justify-start">
+            <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
+          </div>
           
         </div>
       </div>
