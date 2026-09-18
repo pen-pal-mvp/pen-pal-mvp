@@ -2,6 +2,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import TextAreaWithCount from './TextAreaWithCount' // ★ 新しく作った部品を読み込む
 
 export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string, error?: string }> }) {
   const cookieStore = await cookies()
@@ -22,7 +23,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
   const resolvedSearchParams = await searchParams
   const receiverId = resolvedSearchParams.to
   const receiverName = resolvedSearchParams.name || 'ユーザー'
-  // ★ エラーメッセージを受け取るための変数を追加
   const errorMessage = resolvedSearchParams.error
 
   if (!receiverId) redirect('/users')
@@ -33,7 +33,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
     const targetId = formData.get('receiverId') as string
     const targetName = formData.get('receiverName') as string
     
-    // ★ 空白のみ、または未入力の場合はエラーメッセージを出して画面を戻す
     if (!rawContent || !rawContent.trim() || !targetId) {
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
     }
@@ -41,7 +40,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
     let safeContent = rawContent.substring(0, 800)
     safeContent = safeContent.replace(/\r?\n{3,}/g, '\n\n').trim()
 
-    // 圧縮処理の結果、完全に空っぽになってしまった場合もブロック
     if (!safeContent) {
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=empty`)
     }
@@ -64,7 +62,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
     const now = new Date()
     const deliveryAt = new Date(now.getTime() + 3 * 60000)
 
-    // ★ Supabaseからのエラーを監視する
     const { error } = await actionSupabase.from('letters').insert({
       sender_id: actionUser.id,
       receiver_id: targetId,
@@ -74,13 +71,11 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
       delivery_at: deliveryAt.toISOString(),
     })
 
-    // ★ もしデータベース側で何らかのエラー（容量オーバー等）が起きたら、サイレント失敗させずに警告を出す
     if (error) {
       console.error('送信エラー:', error.message)
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=db`)
     }
 
-    // すべて正常ならダッシュボードへ
     redirect('/dashboard')
   }
 
@@ -98,10 +93,8 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
 
         <form action={sendLetter} className="space-y-6">
           <input type="hidden" name="receiverId" value={receiverId} />
-          {/* 名前が消えないように隠しフィールドに追加 */}
           <input type="hidden" name="receiverName" value={receiverName} />
 
-          {/* ★ エラーが発生した時の赤いアナウンス（警告文） */}
           {errorMessage === 'empty' && (
             <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 font-bold text-sm text-center flex flex-col gap-1">
               <span>⚠️ 内容が空白、または不自然な文字のためブロックされました。</span>
@@ -120,20 +113,8 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
             <span>받는 사람: {receiverName}</span>
           </div>
 
-          <div className="relative group">
-            <textarea
-              name="content"
-              required
-              maxLength={800}
-              rows={12}
-              className="w-full p-6 pb-10 bg-white rounded-3xl border border-slate-200 focus:bg-white focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-700 resize-y shadow-sm leading-relaxed break-all"
-              placeholder="ここに手紙の本文を書いてください。のんびり、思いを込めて...&#13;&#10;여기에 편지 본문을 작성해 주세요. 여유를 가지고 마음을 담아서..."
-            ></textarea>
-            
-            <div className="absolute bottom-4 right-6 text-xs font-bold text-slate-400 pointer-events-none">
-              最大 800文字 / 최대 800자
-            </div>
-          </div>
+          {/* ★ ここで先ほど作ったリアルタイムカウント付きの入力欄を呼び出します */}
+          <TextAreaWithCount />
 
           <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-2xl font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
             <span>手紙を送る ✨</span>
