@@ -81,7 +81,17 @@ export default async function DashboardPage() {
           ) : (
             letters.map((letter) => {
               const deliveryDate = new Date(letter.delivery_at)
+              const sentDate = new Date(letter.sent_at)
               const isDelivered = now >= deliveryDate
+
+              // 発送日時を見やすいフォーマットに変換 (例: 2026/09/18 10:53)
+              const formattedSentDate = sentDate.toLocaleString('ja-JP', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })
 
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
@@ -98,10 +108,11 @@ export default async function DashboardPage() {
                   {isDelivered ? (
                     <div>
                       <Link href={`/letters/${letter.id}`} className="block group mb-2">
-                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all">
-                          <p className="text-sm font-bold text-pink-500 flex items-center">
-                            手紙を開く（AI翻訳） <span className="ml-1">✨</span>
+                        <div className="bg-slate-50 p-5 rounded-2xl group-hover:bg-violet-50 group-hover:border-violet-200 border border-transparent transition-all flex justify-between items-center">
+                          <p className="text-sm font-medium text-slate-600 group-hover:text-violet-700 transition-colors">
+                            発送日時: {formattedSentDate}
                           </p>
+                          <span className="text-violet-400 group-hover:text-violet-600 font-bold">→</span>
                         </div>
                       </Link>
                     </div>
