@@ -3,7 +3,6 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-// Next.js 15の仕様に合わせ、searchParamsをPromiseとして受け取る
 export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string }> }) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
@@ -20,7 +19,6 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // パラメータを展開して取得
   const resolvedSearchParams = await searchParams
   const receiverId = resolvedSearchParams.to
   const receiverName = resolvedSearchParams.name || 'ユーザー'
@@ -30,7 +28,10 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
   async function sendLetter(formData: FormData) {
     'use server'
     const rawContent = formData.get('content') as string
-    if (!rawContent || !rawContent.trim()) return
+    // ★ 修正：隠しフィールドから宛先IDを確実に受け取る
+    const targetId = formData.get('receiverId') as string
+    
+    if (!rawContent || !rawContent.trim() || !targetId) return
 
     let safeContent = rawContent.substring(0, 800)
     safeContent = safeContent.replace(/\r?\n{3,}/g, '\n\n').trim()
@@ -47,17 +48,16 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
       }
     )
 
-    // ★ 修正箇所: 正しいプロパティ名(user)で取得し、nullチェックを追加
     const { data: { user: actionUser } } = await actionSupabase.auth.getUser()
     if (!actionUser) return
 
     const now = new Date()
     const deliveryAt = new Date(now.getTime() + 3 * 60000)
 
-    // ★ 修正箇所: nullチェックを通過した actionUser.id を使用
+    // ★ 修正：受け取った targetId を使って確実にデータベースへ保存
     await actionSupabase.from('letters').insert({
       sender_id: actionUser.id,
-      receiver_id: receiverId,
+      receiver_id: targetId,
       content: safeContent,
       is_read: false,
       sent_at: now.toISOString(),
@@ -80,6 +80,9 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
         </div>
 
         <form action={sendLetter} className="space-y-6">
+          {/* ★ 修正：ユーザーには見えない宛先IDの入力欄を設置 */}
+          <input type="hidden" name="receiverId" value={receiverId} />
+
           <div className="bg-violet-50 text-violet-700 p-4 rounded-2xl border border-violet-100 flex flex-col gap-1 font-semibold">
             <span>🕊️ 宛先: {receiverName}</span>
             <span>받는 사람: {receiverName}</span>
