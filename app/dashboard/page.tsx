@@ -63,8 +63,9 @@ export default async function DashboardPage() {
               <span className="text-sm font-bold">펜팔 찾기</span>
             </Link>
             <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
-              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
-              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">프로필·설정</span>
+              {/* ★ ここを font-medium から font-bold に変更して他のボタンと太さを統一しました */}
+              <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
+              <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">프로필·설정</span>
             </Link>
             {!userData?.is_premium && (
               <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/premium">
@@ -136,7 +137,8 @@ export default async function DashboardPage() {
                           <p className="text-lg font-medium text-slate-700 group-hover:text-violet-800 transition-colors">
                             発送日時 / 발송 일시: <br className="sm:hidden" />{formattedSentDate}
                           </p>
-                          <span className="text-violet-400 group-hover:text-violet-600 font-bold text-3xl shrink-0">→</span>
+                          {/* ★ ここを font-bold から font-black (一番太い設定) に変更してSafari/Firefoxでの細さをカバーしました */}
+                          <span className="text-violet-400 group-hover:text-violet-600 font-black text-3xl shrink-0">→</span>
                         </div>
                       </Link>
                     </div>
