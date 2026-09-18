@@ -90,18 +90,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               {letter.content}
             </div>
           </section>
-
-          <section>
-            <div className="font-semibold text-xl mb-3 flex items-center gap-2">
-              <span className="mr-1">✨</span> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-500">
-                AI自動翻訳 / AI 자동 번역
-              </span>
-            </div>
-            <div className="text-lg font-medium p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap">
-              {translatedPlaceholder}
-            </div>
-          </section>
           
         </div>
       </div>
