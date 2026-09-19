@@ -105,7 +105,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
           <div className="w-full flex justify-between items-end pt-2">
             <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
 
-            <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/new?to=${letter.sender_id}&name=${encodeURIComponent(senderName)}`}>
+            {/* リンク先を /letters/new から /letters/reply に変更 */}
+            <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/reply?to=${letter.sender_id}&name=${encodeURIComponent(senderName)}`}>
               <span>手紙を書く ✨</span>
               <span>편지 쓰기</span>
             </Link>
