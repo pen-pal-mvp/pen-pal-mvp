@@ -58,20 +58,20 @@ export default async function DashboardPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
           <h1 className="text-2xl font-bold text-slate-800">受信箱 / 받은 편지함</h1>
           <div className="flex flex-wrap gap-3 items-center">
+            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/users">
+              <span className="text-sm font-bold">🔍 ペンパルを探す</span>
+              <span className="text-sm font-bold">펜팔 찾기</span>
+            </Link>
+            <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
+              <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
+              <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">프로필·설정</span>
+            </Link>
             {!userData?.is_premium && (
               <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/premium">
                 <span className="text-sm font-bold">✨ プレミアム登録</span>
                 <span className="text-sm font-bold">프리미엄 등록</span>
               </Link>
             )}
-            <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
-              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
-              <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">프로필·설정</span>
-            </Link>
-            <Link className="bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white px-5 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/users">
-              <span className="text-sm font-bold">🔍 ペンパルを探す</span>
-              <span className="text-sm font-bold">펜팔 찾기</span>
-            </Link>
           </div>
         </div>
 
@@ -110,12 +110,18 @@ export default async function DashboardPage() {
               const formattedSentDate = sentDate.toLocaleString('ja-JP', formatOptions)
               const formattedDeliveryDate = deliveryDate.toLocaleString('ja-JP', formatOptions)
 
+              // MBTI（英数字）と絵文字を自動判別
+              const rawAvatar = letter.sender.avatar_type || '😊'
+              const avatar = rawAvatar === 'deleted' ? '👻' : rawAvatar
+              const isTextAvatar = /^[a-zA-Z0-9]+$/.test(avatar)
+
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-5 space-x-4">
-                    <div className="text-5xl bg-violet-50 w-20 h-20 flex items-center justify-center rounded-full border border-violet-100 shrink-0">
-                      {letter.sender.avatar_type === 'deleted' ? '👻' : letter.sender.avatar_type || '😊'}
+                    {/* ここで text-4xl から text-3xl に変更 */}
+                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-3xl font-normal text-violet-600 tracking-widest' : 'text-5xl'}`}>
+                      {avatar}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-slate-800 text-xl truncate">{letter.sender.pen_name}</p>
@@ -131,7 +137,7 @@ export default async function DashboardPage() {
                           <p className="text-lg font-medium text-slate-700 group-hover:text-violet-800 transition-colors">
                             発送日時 / 발송 일시: <br className="sm:hidden" />{formattedSentDate}
                           </p>
-                          <span className="text-violet-400 group-hover:text-violet-600 font-bold text-3xl shrink-0">→</span>
+                          <span className="text-violet-400 group-hover:text-violet-600 font-black text-3xl shrink-0">→</span>
                         </div>
                       </Link>
                     </div>
