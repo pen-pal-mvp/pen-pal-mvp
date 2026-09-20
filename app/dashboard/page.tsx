@@ -120,7 +120,8 @@ export default async function DashboardPage() {
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-5 space-x-4">
-                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-2xl font-black text-violet-600 tracking-widest' : 'text-5xl'}`}>
+                    {/* ここで MBTI の大きさと太さを変更 (text-2xl font-black -> text-4xl font-normal) */}
+                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-4xl font-normal text-violet-600 tracking-widest' : 'text-5xl'}`}>
                       {avatar}
                     </div>
                     <div className="flex-1 min-w-0">
