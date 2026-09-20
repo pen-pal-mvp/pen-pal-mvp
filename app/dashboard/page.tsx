@@ -63,7 +63,6 @@ export default async function DashboardPage() {
               <span className="text-sm font-bold">펜팔 찾기</span>
             </Link>
             <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
-              {/* ★ ここを font-medium から font-bold に変更して他のボタンと太さを統一しました */}
               <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
               <span className="text-sm font-bold text-slate-600 group-hover:text-violet-600">프로필·설정</span>
             </Link>
@@ -120,8 +119,8 @@ export default async function DashboardPage() {
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-5 space-x-4">
-                    {/* ここで MBTI の大きさと太さを変更 (text-2xl font-black -> text-4xl font-normal) */}
-                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-4xl font-normal text-violet-600 tracking-widest' : 'text-5xl'}`}>
+                    {/* ここで text-4xl から text-3xl に変更 */}
+                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-3xl font-normal text-violet-600 tracking-widest' : 'text-5xl'}`}>
                       {avatar}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -138,7 +137,6 @@ export default async function DashboardPage() {
                           <p className="text-lg font-medium text-slate-700 group-hover:text-violet-800 transition-colors">
                             発送日時 / 발송 일시: <br className="sm:hidden" />{formattedSentDate}
                           </p>
-                          {/* ★ ここを font-bold から font-black (一番太い設定) に変更してSafari/Firefoxでの細さをカバーしました */}
                           <span className="text-violet-400 group-hover:text-violet-600 font-black text-3xl shrink-0">→</span>
                         </div>
                       </Link>
