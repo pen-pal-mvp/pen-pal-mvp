@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
-import Link from 'next/link'
 import TextAreaWithCount from '../new/TextAreaWithCount'
+import CancelButton from './CancelButton'
 
 export default async function NewLetterPage({ searchParams }: { searchParams: Promise<{ to?: string, name?: string, error?: string }> }) {
   const cookieStore = await cookies()
@@ -97,11 +97,8 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
         
         <div className="flex justify-between items-center border-b border-slate-200 pb-4 px-2">
           <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800">新しい手紙を書く / 새 편지 쓰기</h1>
-          {/* ★ ここを変更：キャンセルを押すと直前のページ（手紙を読む画面）に戻るようにしました */}
-          <a className="text-sm text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1 cursor-pointer" href="javascript:history.back()">
-            <span>← キャンセル</span>
-            <span>취소</span>
-          </a>
+          {/* ★ ここを先ほど作った専用の戻るボタン（CancelButton）に置き換えました */}
+          <CancelButton />
         </div>
 
         <form action={sendLetter} className="space-y-6">
