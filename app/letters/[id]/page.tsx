@@ -84,7 +84,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
           <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
-            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-lg font-black text-violet-600 tracking-widest' : 'text-4xl'}`}>
+            {/* ここで text-lg font-black から text-3xl font-normal に変更しました */}
+            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-3xl font-normal text-violet-600 tracking-widest' : 'text-4xl'}`}>
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
