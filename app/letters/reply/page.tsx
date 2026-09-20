@@ -97,10 +97,11 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
         
         <div className="flex justify-between items-center border-b border-slate-200 pb-4 px-2">
           <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800">新しい手紙を書く / 새 편지 쓰기</h1>
-          <Link className="text-sm text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1" href="/users">
+          {/* ★ ここを変更：キャンセルを押すと直前のページ（手紙を読む画面）に戻るようにしました */}
+          <a className="text-sm text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1 cursor-pointer" href="javascript:history.back()">
             <span>← キャンセル</span>
             <span>취소</span>
-          </Link>
+          </a>
         </div>
 
         <form action={sendLetter} className="space-y-6">
@@ -116,7 +117,7 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
           {errorMessage === 'db' && (
             <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-200 font-bold text-sm text-center flex flex-col gap-1">
               <span>⚠️ サーバーエラーにより送信できませんでした。内容を見直してください。</span>
-              <span className="text-xs">서버 오류로 인해 전송할 수 없습니다. 내용을 다시 확인해 주세요.</span>
+              <span className="text-xs">서버 오류로 인해 전송할 수 정 없습니다. 내용을 다시 확인해 주세요.</span>
             </div>
           )}
 
