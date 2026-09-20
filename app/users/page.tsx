@@ -69,15 +69,12 @@ export default async function UsersPage() {
               const displayMbti = (targetUser.avatar_type === '😊' || !targetUser.avatar_type) 
                 ? '????' 
                 : targetUser.avatar_type;
-              
-              // 英字か絵文字かを判定してサイズ調整
-              const isTextAvatar = /^[a-zA-Z0-9]+$/.test(displayMbti)
 
               return (
                 <div key={targetUser.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 hover:shadow-md hover:border-violet-200 transition-all group">
                   
                   {/* アバター */}
-                  <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 group-hover:scale-105 transition-transform ${isTextAvatar ? 'text-lg font-black text-violet-600 tracking-widest' : 'text-4xl'}`}>
+                  <div className="flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 group-hover:scale-105 transition-transform text-4xl text-slate-700">
                     {displayMbti}
                   </div>
 
