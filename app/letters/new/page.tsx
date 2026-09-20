@@ -88,7 +88,7 @@ export default async function NewLetterPage({ searchParams }: { searchParams: Pr
       redirect(`/letters/new?to=${targetId}&name=${encodeURIComponent(targetName)}&error=db`)
     }
 
-    redirect('/dashboard')
+    redirect('/users')
   }
 
   return (
