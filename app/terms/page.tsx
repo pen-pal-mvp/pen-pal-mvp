@@ -78,7 +78,6 @@ export default function TermsPage() {
             <p className="font-medium">운영자는 필요하다고 판단되는 경우 사용자에게 통지하지 않고 본 약관을 변경할 수 있습니다.</p>
           </section>
 
-          {/* 追加：料金および返金について */}
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               5. 料金および返金について / 요금 및 환불에 대하여
@@ -92,9 +91,28 @@ export default function TermsPage() {
           </section>
           
         </div>
+
+        {/* 追加：文化交流の同意選択エリア */}
+        <div className="flex flex-col gap-4 items-center justify-center pt-2">
+          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
+            <input type="radio" name="agreement_culture" className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" />
+            <div className="flex flex-col">
+              <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して韓国文化と交流する</span>
+              <span className="text-sm font-medium text-slate-600 mt-1">이용약관에 동의하고 한국 문화와 교류하기</span>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
+            <input type="radio" name="agreement_culture" className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" />
+            <div className="flex flex-col">
+              <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して日本文化と交流する</span>
+              <span className="text-sm font-medium text-slate-600 mt-1">이용약관에 동의하고 일본 문화와 교류하기</span>
+            </div>
+          </label>
+        </div>
         
         {/* 下部アクション */}
-        <div className="flex justify-center pt-2">
+        <div className="flex justify-center pt-4">
           <Link href="/premium" className="w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
             <span>✨ プレミアム登録</span>
             <span className="text-sm">프리미엄 등록</span>
