@@ -2,9 +2,55 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { createBrowserClient } from '@supabase/ssr'
 
 export default function TermsPage() {
-  const [isAgreed, setIsAgreed] = useState(false)
+  const router = useRouter()
+  
+  // 単なる「同意したか」ではなく「どちらの文化を選んだか」を記憶するように変更
+  const [selectedCulture, setSelectedCulture] = useState<string | null>(null)
+  
+  // 連打防止用のフラグ
+  const [isProcessing, setIsProcessing] = useState(false)
+
+  // クライアント側でSupabaseを使うための準備
+  const supabase = createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+
+  // 決済ボタンが押された時の処理
+  const handlePayment = async (provider: string) => {
+    if (!selectedCulture || isProcessing) return
+    setIsProcessing(true)
+    
+    try {
+      // 1. 今ログインしている人（UUID）を特定する
+      const { data: { user } } = await supabase.auth.getUser()
+      
+      if (user) {
+        // 2. そのUUIDの users テーブルの target_culture 枠に、選んだ文化を保存
+        const { error } = await supabase
+          .from('users')
+          .update({ target_culture: selectedCulture })
+          .eq('id', user.id)
+
+        if (error) {
+          console.error('Error saving culture:', error)
+          setIsProcessing(false)
+          return
+        }
+      }
+      
+      // 3. 保存が成功したら、次の画面（/premium）へ移動する
+      router.push('/premium')
+      
+    } catch (error) {
+      console.error('Unexpected error:', error)
+      setIsProcessing(false)
+    }
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
@@ -109,8 +155,9 @@ export default function TermsPage() {
             <input 
               type="radio" 
               name="agreement_culture" 
+              value="korea"
               className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" 
-              onChange={() => setIsAgreed(true)}
+              onChange={(e) => setSelectedCulture(e.target.value)}
             />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して韓国文化と交流する</span>
@@ -122,8 +169,9 @@ export default function TermsPage() {
             <input 
               type="radio" 
               name="agreement_culture" 
+              value="japan"
               className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" 
-              onChange={() => setIsAgreed(true)}
+              onChange={(e) => setSelectedCulture(e.target.value)}
             />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して日本文化と交流する</span>
@@ -134,14 +182,22 @@ export default function TermsPage() {
         
         {/* 下部アクション (LINE決済 & カカオ決済) */}
         <div className="flex flex-col items-center gap-3 pt-4 w-full max-w-md mx-auto">
-          {isAgreed ? (
+          {selectedCulture !== null ? (
             <>
-              <button className="w-full px-8 py-4 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+              <button 
+                onClick={() => handlePayment('line')}
+                disabled={isProcessing}
+                className={`w-full px-8 py-4 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
                 <span>LINE Pay で登録 (300円 / 月)</span>
                 <span className="text-sm font-medium">라인페이로 등록 (300엔 / 월)</span>
               </button>
               
-              <button className="w-full px-8 py-4 bg-[#FEE500] hover:bg-[#e5ce00] text-slate-900 rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+              <button 
+                onClick={() => handlePayment('kakao')}
+                disabled={isProcessing}
+                className={`w-full px-8 py-4 bg-[#FEE500] hover:bg-[#e5ce00] text-slate-900 rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
                 <span>カカオペイで登録 (3000ウォン / 月)</span>
                 <span className="text-sm font-medium">카카오페이로 구독 (3000원 / 월)</span>
               </button>
