@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useState } from 'react'
 
 export default function TermsPage() {
-  // ★ ラジオボタンが選択されたかどうかを判定する状態
   const [isAgreed, setIsAgreed] = useState(false)
 
   return (
@@ -100,12 +99,19 @@ export default function TermsPage() {
 
         {/* 文化交流の同意選択エリア */}
         <div className="flex flex-col gap-4 items-center justify-center pt-2">
+          
+          {/* ★ 追加：変更できない旨の注意書き */}
+          <div className="text-center text-rose-500 font-bold mb-2 flex flex-col gap-1">
+            <span>⚠️ 一度選択すると後から変更することはできません。</span>
+            <span>한 번 선택하면 나중에 변경할 수 없습니다.</span>
+          </div>
+
           <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
             <input 
               type="radio" 
               name="agreement_culture" 
               className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" 
-              onChange={() => setIsAgreed(true)} // ★ 選択されたら状態をtrueにする
+              onChange={() => setIsAgreed(true)}
             />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して韓国文化と交流する</span>
@@ -118,7 +124,7 @@ export default function TermsPage() {
               type="radio" 
               name="agreement_culture" 
               className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" 
-              onChange={() => setIsAgreed(true)} // ★ 選択されたら状態をtrueにする
+              onChange={() => setIsAgreed(true)}
             />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して日本文化と交流する</span>
@@ -130,13 +136,11 @@ export default function TermsPage() {
         {/* 下部アクション */}
         <div className="flex justify-center pt-4">
           {isAgreed ? (
-            // ★ チェックされている場合：本来のリンクボタンを表示
             <Link href="/premium" className="w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
               <span>✨ プレミアム登録</span>
               <span className="text-sm">프리미엄 등록</span>
             </Link>
           ) : (
-            // ★ チェックされていない場合：押せないグレーのボタンを表示
             <button disabled className="w-full sm:w-auto px-12 py-4 bg-slate-300 text-slate-500 cursor-not-allowed rounded-full font-bold text-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
               <span>✨ プレミアム登録</span>
               <span className="text-sm">프리미엄 등록</span>
