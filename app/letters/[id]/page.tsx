@@ -84,7 +84,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
           <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
-            {/* ここで text-3xl から text-2xl に変更しました */}
             <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-2xl font-normal text-violet-600 tracking-widest' : 'text-4xl'}`}>
               {senderAvatar}
             </div>
@@ -102,18 +101,34 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
+          {/* ★追加：AI自動翻訳セクション */}
+          <section>
+            <div className="font-semibold text-xl mb-3 flex items-center gap-2">
+              <span className="mr-1">✨</span> 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-500">
+                AI自動翻訳 / AI 자동 번역
+              </span>
+            </div>
+            <div className="text-base sm:text-lg font-medium p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap">
+              ※現在、AI自動翻訳システムは準備中です。<br/>
+              （今後のアップデートでOpenAIと連携されます）<br/>
+              <br/>
+              ※현재 AI 자동 번역 시스템은 준비 중입니다.<br/>
+              (향후 업데이트에서 OpenAI와 연동될 예정입니다)
+            </div>
+          </section>
+
           {/* 下部のボタン配置コンテナ */}
           <div className="w-full flex justify-between items-end pt-2">
             <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
 
-            {/* リンク先を /letters/new に戻しました */}
             <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/reply?to=${letter.sender_id}&name=${encodeURIComponent(senderName)}`}>
               <span>手紙を書く ✨</span>
               <span>편지 쓰기</span>
             </Link>
           </div>
           
-          {/* ★追加：詐欺への注意喚起メッセージ */}
+          {/* 詐欺への注意喚起メッセージ */}
           <div className="mt-8 p-5 md:p-6 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col gap-3 text-rose-700 shadow-sm">
             <p className="font-bold text-sm sm:text-base leading-relaxed">
               ⚠️「まだ直接会って、信頼関係ができていない相手」から、投資、暗号資産（仮想通貨）、副業、共同財布、お金の困りごとなど、1円でも金銭が絡む話が出たら、その瞬間に100%詐欺だと判断してブロックする。
