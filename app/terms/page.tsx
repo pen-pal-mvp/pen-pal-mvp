@@ -140,6 +140,21 @@ export default function TermsPage() {
               본 서비스의 프리미엄 회원 월간 요금은 디지털 콘텐츠라는 서비스 특성상 결제 절차가 완료된 후에는 환불이나 일할 계산을 통한 정산이 일절 불가합니다. 해지 절차를 진행할 경우, 다음 청구일 이후의 갱신이 중단됩니다.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
+              6. 手紙の仕様および制限 / 편지의 사양 및 제한 사항
+            </h2>
+            <p className="mb-2 font-medium">本サービスにおける手紙の送受信には、以下の仕様および制限が適用されます。あらかじめご了承ください。</p>
+            <p className="mb-4 font-medium">본 서비스의 편지 송수신에는 다음과 같은 사양 및 제한이 적용됩니다. 미리 양해 부탁드립니다.</p>
+            <ul className="list-disc list-inside space-y-3 ml-2 bg-slate-50 p-6 rounded-2xl border border-slate-100 font-medium">
+              <li>送信した手紙の取り消しおよび削除はできません。<br/><span className="ml-5 inline-block mt-1">발송한 편지는 취소 및 삭제가 불가능합니다.</span></li>
+              <li>送信した手紙は、宛先のユーザーのみが閲覧できます。<br/><span className="ml-5 inline-block mt-1">발송한 편지는 수신자 본인만 열람할 수 있습니다.</span></li>
+              <li>手紙は送信後すぐに相手の受信箱に届きますが、送信から36時間が経過するまで開封することはできません。<br/><span className="ml-5 inline-block mt-1">편지는 발송 즉시 상대방의 수신함에 도착하지만, 발송 후 36시간이 지날 때까지 열어볼 수 없습니다.</span></li>
+              <li>手紙の送信は、1ヶ月あたり最大10通までに制限されています。<br/><span className="ml-5 inline-block mt-1">편지 발송은 월 최대 10통으로 제한됩니다.</span></li>
+              <li>すべての手紙は、送信されてから300日が経過した時点でシステムにより自動的に削除されます。<br/><span className="ml-5 inline-block mt-1">모든 편지는 발송된 지 300일이 경과하면 시스템에 의해 자동으로 삭제됩니다.</span></li>
+            </ul>
+          </section>
           
         </div>
 
