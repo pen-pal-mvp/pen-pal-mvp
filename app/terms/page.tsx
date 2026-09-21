@@ -27,7 +27,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* 追加：総則 */}
+          {/* 総則 */}
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               総則 / 총칙
@@ -76,6 +76,19 @@ export default function TermsPage() {
             </h2>
             <p className="mb-2 font-medium">運営者は、必要と判断した場合、ユーザーに通知することなく本規約を変更できるものとします。</p>
             <p className="font-medium">운영자는 필요하다고 판단되는 경우 사용자에게 통지하지 않고 본 약관을 변경할 수 있습니다.</p>
+          </section>
+
+          {/* 追加：料金および返金について */}
+          <section>
+            <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
+              5. 料金および返金について / 요금 및 환불에 대하여
+            </h2>
+            <p className="mb-2 font-medium">
+              本サービスのプレミアム会員の月額料金は、デジタルコンテンツというサービスの性質上、お支払い手続き完了後の返金や日割り計算による精算は一切お受けできません。解約手続きを行った場合は、次回請求時からの更新停止となります。
+            </p>
+            <p className="font-medium">
+              본 서비스의 프리미엄 회원 월간 요금은 디지털 콘텐츠라는 서비스 특성상 결제 절차가 완료된 후에는 환불이나 일할 계산을 통한 정산이 일절 불가합니다. 해지 절차를 진행할 경우, 다음 청구일 이후의 갱신이 중단됩니다.
+            </p>
           </section>
           
         </div>
