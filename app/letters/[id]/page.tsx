@@ -83,9 +83,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
-          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6 pr-24">
-            {/* ★変更：テキスト（MBTI）の場合は青背景・白文字にし、絵文字の場合は従来の薄紫背景になるよう調整しました */}
-            <div className={`flex items-center justify-center rounded-full shrink-0 w-16 h-16 ${isTextAvatar ? 'bg-blue-700 text-white text-xl font-bold tracking-widest' : 'border border-violet-100 bg-violet-50 text-4xl'}`}>
+          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
+            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-2xl font-normal text-violet-600 tracking-widest' : 'text-4xl'}`}>
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
@@ -102,7 +101,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
-          {/* AI自動翻訳セクション */}
+          {/* ★追加：AI自動翻訳セクション */}
           <section>
             <div className="font-semibold text-xl mb-3 flex items-center gap-2">
               <span className="mr-1">✨</span> 
