@@ -70,10 +70,16 @@ export default async function UsersPage() {
                 ? '????' 
                 : targetUser.avatar_type;
 
-              // target_cultureがjapanなら韓国国旗のスタイル、それ以外は元の紫スタイル
-              const avatarStyle = targetUser.target_culture === 'japan'
-                ? 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent' // 韓国国旗デザイン
-                : 'bg-violet-50 border-violet-100 text-slate-700'; // 元の薄紫デザイン
+              // target_cultureに応じて国旗スタイルを変更
+              let avatarStyle = 'bg-violet-50 border-violet-100 text-slate-700'; // デフォルト（未設定時など）
+
+              if (targetUser.target_culture === 'japan') {
+                // 韓国国旗デザイン（赤・青ツートン）
+                avatarStyle = 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent'; 
+              } else if (targetUser.target_culture === 'korea') {
+                // 日本国旗デザイン（白地に赤丸）
+                avatarStyle = 'bg-[radial-gradient(circle_at_center,#BC002D_55%,white_56%)] text-white border-slate-200';
+              }
 
               return (
                 <div key={targetUser.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 hover:shadow-md hover:border-violet-200 transition-all group">
