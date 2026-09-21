@@ -122,23 +122,6 @@ export default async function ProfilePage() {
             <BioInput defaultValue={userData?.bio || ''} />
           </div>
 
-          <div>
-            <label className="block text-lg font-semibold text-slate-700 mb-2">
-              メンバーステータス / 멤버 상태
-            </label>
-            <div className={`p-4 rounded-2xl border font-semibold text-lg flex flex-col gap-1 ${userData?.is_premium ? 'bg-violet-50 border-violet-100 text-violet-700' : 'bg-slate-50 border-slate-200 text-slate-700'}`}>
-              {userData?.is_premium ? (
-                <>
-                  <span>🌟 プレミアム会員 / 프리미엄 회원</span>
-                </>
-              ) : (
-                <>
-                  <span>無料会員 (基本機能制限なし) / 무료 회원 (기본 기능 제한 없음)</span>
-                </>
-              )}
-            </div>
-          </div>
-
           <div className="pt-4">
             <button type="submit" className="w-full py-4 border-2 border-violet-400 text-violet-600 hover:bg-violet-50 rounded-xl font-bold text-lg transition-colors flex flex-col items-center justify-center gap-1 leading-tight">
               <span>保存してダッシュボードへ戻る</span>
