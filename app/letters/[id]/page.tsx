@@ -51,30 +51,41 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
 
   const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '😊')
   const senderName = letter.sender?.pen_name || '退会したユーザー'
-  const translatedPlaceholder = "※現在、AI自動翻訳システムは準備中です。\n（今後のアップデートでOpenAIと連携されます）\n\n※현재 AI 자동 번역 시스템은 준비 중입니다.\n(향후 업데이트에서 OpenAI와 연동될 예정입니다)"
+  
+  // 英字（MBTI等）か絵文字かの自動判別
+  const isTextAvatar = /^[a-zA-Z0-9]+$/.test(senderAvatar)
 
   return (
-    <div className="min-h-screen bg-slate-50 p-8 font-sans text-slate-800">
+    <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        <div className="flex justify-between items-center px-2 border-b border-slate-200 pb-4">
-          <h1 className="text-3xl font-semibold text-slate-800">
+        {/* ヘッダー部分：Flexboxで自然なバランス配置（ド真ん中強制を解除） */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-4 px-2">
+          
+          {/* 左：手紙を読む */}
+          <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 text-center md:text-left shrink-0">
             手紙を読む / 편지 읽기
           </h1>
-          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-end leading-tight gap-1" href="/dashboard">
+          
+          {/* 中央：翻訳ボタン（自然な余白で配置） */}
+          <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
+            <span className="text-sm font-bold">✨ 翻訳する</span>
+            <span className="text-sm font-bold">번역하기</span>
+          </button>
+
+          {/* 右：受信箱へ戻る */}
+          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/dashboard">
             <span>← 受信箱へ戻る</span>
             <span>수신함으로 돌아가기</span>
           </Link>
+          
         </div>
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
-          <div className="absolute top-6 right-6 md:top-8 md:right-8">
-            <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
-          </div>
-
-          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6 pr-24">
-            <div className="text-base font-black text-violet-600 tracking-wider bg-violet-50 w-16 h-16 flex items-center justify-center rounded-full border border-violet-100">
+          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
+            {/* ここで text-3xl から text-2xl に変更しました */}
+            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-2xl font-normal text-violet-600 tracking-widest' : 'text-4xl'}`}>
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
@@ -91,25 +102,17 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
-          <section>
-            <div className="font-semibold text-xl mb-3 flex items-center gap-2">
-              <span className="mr-1">✨</span> 
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-pink-500">
-                AI自動翻訳 / AI 자동 번역
-              </span>
-            </div>
-            <div className="text-lg font-medium p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap">
-              {translatedPlaceholder}
-            </div>
-          </section>
+          {/* 下部のボタン配置コンテナ */}
+          <div className="w-full flex justify-between items-end pt-2">
+            <ActionMenu letterId={letter.id} senderId={letter.sender_id} />
 
-          <div className="pt-6 border-t border-slate-100 text-center flex flex-col items-center gap-6">
-            <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-4 rounded-full text-lg font-semibold transition-colors leading-tight gap-1" href={`/letters/reply?to=${letter.sender_id}&name=${encodeURIComponent(letter.senderName)}`}>
-              <span>返信を書く</span>
-              <span>답장 쓰기</span>
+            {/* リンク先を /letters/new に戻しました */}
+            <Link className="inline-flex flex-col items-center justify-center border-2 border-violet-400 text-violet-600 hover:bg-violet-50 px-8 py-2 rounded-xl text-sm font-bold transition-colors leading-tight gap-1" href={`/letters/reply?to=${letter.sender_id}&name=${encodeURIComponent(senderName)}`}>
+              <span>手紙を書く ✨</span>
+              <span>편지 쓰기</span>
             </Link>
           </div>
-
+          
           {/* ★追加：詐欺への注意喚起メッセージ */}
           <div className="mt-8 p-5 md:p-6 bg-rose-50 border border-rose-200 rounded-2xl flex flex-col gap-3 text-rose-700 shadow-sm">
             <p className="font-bold text-sm sm:text-base leading-relaxed">
@@ -119,7 +122,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
               ⚠️ "아직 직접 만나서 신뢰 관계가 형성되지 않은 상대"로부터 투자, 암호화폐(가상화폐), 부업, 공동 지갑, 금전적인 어려움 등 단 1원이라도 돈과 관련된 이야기가 나오면, 그 즉시 100% 사기라고 판단하고 차단하세요.
             </p>
           </div>
-          
+
         </div>
       </div>
     </div>
