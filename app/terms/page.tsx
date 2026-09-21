@@ -23,7 +23,7 @@ export default function TermsPage() {
             <p className="text-lg font-medium mb-4">
               韓日ペンパル（以下「本サービス」）をご利用いただきありがとうございます。本サービスを利用する皆様（以下「ユーザー」）は、本規約に同意したものとみなされます。
               <br className="my-2"/>
-              <span className="text-base text-slate-500">한일 펜팔(이하 "본 서비스")을 이용해 주셔서 감사합니다. 본 서비스를 이용하는 모든 분(이하 "사용자")은 본 약관에 동의한 것으로 간주됩니다.</span>
+              <span>한일 펜팔(이하 "본 서비스")을 이용해 주셔서 감사합니다. 본 서비스를 이용하는 모든 분(이하 "사용자")은 본 약관에 동의한 것으로 간주됩니다.</span>
             </p>
           </section>
 
@@ -35,7 +35,7 @@ export default function TermsPage() {
             <p className="mb-2 font-bold text-lg text-slate-800">
               自分がして欲しくないことを他者にしてはならない。
             </p>
-            <p className="text-sm text-slate-500 font-medium">
+            <p className="font-bold text-lg text-slate-800">
               자신이 겪기 싫은 일을 타인에게 해서는 안 됩니다.
             </p>
           </section>
@@ -45,12 +45,12 @@ export default function TermsPage() {
               1. 禁止事項 / 금지 사항
             </h2>
             <p className="mb-2 font-medium">ユーザーは、以下の行為を行ってはなりません。</p>
-            <p className="text-sm text-slate-500 mb-4 font-medium">사용자는 다음 행위를 해서는 안 됩니다.</p>
+            <p className="mb-4 font-medium">사용자는 다음 행위를 해서는 안 됩니다.</p>
             <ul className="list-disc list-inside space-y-3 ml-2 bg-slate-50 p-6 rounded-2xl border border-slate-100 font-medium">
-              <li>法令や公序良俗に違反する行為<br/><span className="text-sm text-slate-500 ml-5">법령 및 공서양속에 위반되는 행위</span></li>
-              <li>他のユーザーへの嫌がらせ、誹謗中傷、スパム行為<br/><span className="text-sm text-slate-500 ml-5">다른 사용자에 대한 괴롭힘, 비방, 스팸 행위</span></li>
-              <li>個人情報の不正な収集や公開<br/><span className="text-sm text-slate-500 ml-5">개인정보의 부당한 수집 및 공개</span></li>
-              <li>システムの破壊や不正アクセス<br/><span className="text-sm text-slate-500 ml-5">시스템 파괴 및 무단 접근</span></li>
+              <li>法令や公序良俗に違反する行為<br/><span className="ml-5 inline-block mt-1">법령 및 공서양속에 위반되는 행위</span></li>
+              <li>他のユーザーへの嫌がらせ、誹謗中傷、スパム行為<br/><span className="ml-5 inline-block mt-1">다른 사용자에 대한 괴롭힘, 비방, 스팸 행위</span></li>
+              <li>個人情報の不正な収集や公開<br/><span className="ml-5 inline-block mt-1">개인정보의 부당한 수집 및 공개</span></li>
+              <li>システムの破壊や不正アクセス<br/><span className="ml-5 inline-block mt-1">시스템 파괴 및 무단 접근</span></li>
             </ul>
           </section>
 
@@ -59,7 +59,7 @@ export default function TermsPage() {
               2. サービスの提供と停止 / 서비스 제공 및 중지
             </h2>
             <p className="mb-2 font-medium">本サービスは、メンテナンスや予期せぬトラブルにより、予告なくサービスを停止・変更する場合があります。</p>
-            <p className="text-sm text-slate-500 font-medium">본 서비스는 유지보수나 예기치 않은 문제로 인해 예고 없이 서비스를 중단하거나 변경할 수 있습니다.</p>
+            <p className="font-medium">본 서비스는 유지보수나 예기치 않은 문제로 인해 예고 없이 서비스를 중단하거나 변경할 수 있습니다.</p>
           </section>
 
           <section>
@@ -67,7 +67,7 @@ export default function TermsPage() {
               3. 免責事項 / 면책 조항
             </h2>
             <p className="mb-2 font-medium">運営者は、ユーザー同士のトラブルや、本サービスの利用によって生じた損害について、一切の責任を負いません。</p>
-            <p className="text-sm text-slate-500 font-medium">운영자는 사용자 간의 문제나 본 서비스 이용으로 인해 발생한 손해에 대해 어떠한 책임도 지지 않습니다.</p>
+            <p className="font-medium">운영자는 사용자 간의 문제나 본 서비스 이용으로 인해 발생한 손해에 대해 어떠한 책임도 지지 않습니다.</p>
           </section>
 
           <section>
@@ -75,7 +75,7 @@ export default function TermsPage() {
               4. 規約の変更 / 약관 변경
             </h2>
             <p className="mb-2 font-medium">運営者は、必要と判断した場合、ユーザーに通知することなく本規約を変更できるものとします。</p>
-            <p className="text-sm text-slate-500 font-medium">운영자는 필요하다고 판단되는 경우 사용자에게 통지하지 않고 본 약관을 변경할 수 있습니다.</p>
+            <p className="font-medium">운영자는 필요하다고 판단되는 경우 사용자에게 통지하지 않고 본 약관을 변경할 수 있습니다.</p>
           </section>
           
         </div>
