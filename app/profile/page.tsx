@@ -77,15 +77,17 @@ export default async function ProfilePage() {
             <span>← ダッシュボードへ戻る</span>
             <span>대시보드로 돌아가기</span>
           </Link>
-          <h1 className="text-3xl font-semibold text-slate-800">
-            プロフィール設定 / 프로필 설정
+          <h1 className="text-3xl font-semibold text-slate-800 flex flex-col gap-1">
+            <span>プロフィール設定</span>
+            <span>프로필 설정</span>
           </h1>
         </div>
 
         <form action={updateProfile} className="space-y-6">
           <div>
-            <label className="block text-lg font-semibold text-slate-700 mb-2">
-              ペンネーム（最大20文字） / 닉네임 (최대 20자)
+            <label className="flex flex-col text-lg font-semibold text-slate-700 mb-2 gap-1">
+              <span>ペンネーム(最大20文字)</span>
+              <span>닉네임(최대20자)</span>
             </label>
             <input 
               type="text" 
@@ -113,8 +115,9 @@ export default async function ProfilePage() {
           </div>
 
           <div>
-            <label className="block text-lg font-semibold text-slate-700 mb-2">
-              自己紹介（最大144文字） / 자기소개 (최대 144자)
+            <label className="flex flex-col text-lg font-semibold text-slate-700 mb-2 gap-1">
+              <span>自己紹介(最大144文字)</span>
+              <span>자기소개(최대144자)</span>
             </label>
             <BioInput defaultValue={userData?.bio || ''} />
           </div>
