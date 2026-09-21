@@ -9,7 +9,6 @@ export default function TermsPage() {
   const router = useRouter()
   
   const [selectedCulture, setSelectedCulture] = useState<string | null>(null)
-  // ★追加：生年月日の状態を管理
   const [birthDate, setBirthDate] = useState<string>('')
   
   const [isProcessing, setIsProcessing] = useState(false)
@@ -28,12 +27,12 @@ export default function TermsPage() {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // ★変更：文化と一緒に生年月日（birth_date）もユーザーのUUIDに紐づけて保存
+        // 文化と一緒に生年月日（birth_date）もユーザーのUUIDに紐づけて保存
         const { error } = await supabase
           .from('users')
           .update({ 
             target_culture: selectedCulture,
-            birth_date: birthDate // Supabaseに birth_date カラムを作成しておいてね！
+            birth_date: birthDate
           })
           .eq('id', user.id)
 
@@ -44,7 +43,7 @@ export default function TermsPage() {
         }
       }
       
-      // 決済APIの呼び出し（前回作成したまま変更なし）
+      // 決済APIの呼び出し
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -87,7 +86,7 @@ export default function TermsPage() {
           </Link>
         </div>
 
-        {/* 規約本文エリア（省略せずそのまま） */}
+        {/* 規約本文エリア */}
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 space-y-10 leading-relaxed text-slate-700">
           <section>
             <p className="text-lg font-medium mb-4">
@@ -97,7 +96,6 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* ...中略（前回の規約本文と全く同じです）... */}
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               総則 / 총칙
@@ -180,10 +178,11 @@ export default function TermsPage() {
             <span>한 번 등록/선택하면 나중에 변경할 수 없습니다.</span>
           </div>
 
-          {/* ★追加：生年月日入力フォーム */}
+          {/* 生年月日入力フォーム */}
           <div className="w-full bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex flex-col gap-2">
+            {/* ★変更：韓国語部分を覆っていたspanタグを削除し、日本語と同じスタイルが適用されるように修正しました */}
             <label className="font-bold text-slate-800 text-base sm:text-lg">
-              生年月日を入力してください <span className="text-sm font-normal text-slate-500">/ 생년월일을 입력해 주세요</span>
+              生年月日を入力してください / 생년월일을 입력해 주세요
             </label>
             <input 
               type="date" 
@@ -223,7 +222,6 @@ export default function TermsPage() {
         </div>
         
         {/* 下部アクション (LINE決済 & カカオ決済) */}
-        {/* ★変更：selectedCulture と birthDate の両方が入力されているかチェック */}
         <div className="flex flex-col items-center gap-3 pt-4 w-full max-w-md mx-auto">
           {(selectedCulture !== null && birthDate !== '') ? (
             <>
