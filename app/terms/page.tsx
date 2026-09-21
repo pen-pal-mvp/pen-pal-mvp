@@ -8,46 +8,66 @@ import { createBrowserClient } from '@supabase/ssr'
 export default function TermsPage() {
   const router = useRouter()
   
-  // 単なる「同意したか」ではなく「どちらの文化を選んだか」を記憶するように変更
   const [selectedCulture, setSelectedCulture] = useState<string | null>(null)
+  // ★追加：生年月日の状態を管理
+  const [birthDate, setBirthDate] = useState<string>('')
   
-  // 連打防止用のフラグ
   const [isProcessing, setIsProcessing] = useState(false)
 
-  // クライアント側でSupabaseを使うための準備
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  // 決済ボタンが押された時の処理
   const handlePayment = async (provider: string) => {
-    if (!selectedCulture || isProcessing) return
+    // 生年月日と文化の両方が入力されていない場合は進めない
+    if (!selectedCulture || !birthDate || isProcessing) return
     setIsProcessing(true)
     
     try {
-      // 1. 今ログインしている人（UUID）を特定する
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user) {
-        // 2. そのUUIDの users テーブルの target_culture 枠に、選んだ文化を保存
+        // ★変更：文化と一緒に生年月日（birth_date）もユーザーのUUIDに紐づけて保存
         const { error } = await supabase
           .from('users')
-          .update({ target_culture: selectedCulture })
+          .update({ 
+            target_culture: selectedCulture,
+            birth_date: birthDate // Supabaseに birth_date カラムを作成しておいてね！
+          })
           .eq('id', user.id)
 
         if (error) {
-          console.error('Error saving culture:', error)
+          console.error('Error saving user data:', error)
           setIsProcessing(false)
           return
         }
       }
       
-      // 3. 保存が成功したら、次の画面（/premium）へ移動する
-      router.push('/premium')
+      // 決済APIの呼び出し（前回作成したまま変更なし）
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ provider }),
+      });
+
+      if (!response.ok) {
+        throw new Error('決済の準備に失敗しました');
+      }
+
+      const data = await response.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('決済URLの取得に失敗しました');
+      }
       
     } catch (error) {
       console.error('Unexpected error:', error)
+      alert('決済画面への移動中にエラーが発生しました。もう一度お試しください。')
       setIsProcessing(false)
     }
   }
@@ -67,9 +87,8 @@ export default function TermsPage() {
           </Link>
         </div>
 
-        {/* 規約本文エリア */}
+        {/* 規約本文エリア（省略せずそのまま） */}
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 space-y-10 leading-relaxed text-slate-700">
-          
           <section>
             <p className="text-lg font-medium mb-4">
               韓日ペンパル（以下「本サービス」）をご利用いただきありがとうございます。本サービスを利用する皆様（以下「ユーザー」）は、本規約に同意したものとみなされます。
@@ -78,19 +97,15 @@ export default function TermsPage() {
             </p>
           </section>
 
-          {/* 総則 */}
+          {/* ...中略（前回の規約本文と全く同じです）... */}
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               総則 / 총칙
             </h2>
-            <p className="mb-2 font-bold text-lg text-slate-800">
-              自分がして欲しくないことを他者にしてはならない。
-            </p>
-            <p className="font-bold text-lg text-slate-800">
-              자신이 겪기 싫은 일을 타인에게 해서는 안 됩니다.
-            </p>
+            <p className="mb-2 font-bold text-lg text-slate-800">自分がして欲しくないことを他者にしてはならない。</p>
+            <p className="font-bold text-lg text-slate-800">자신이 겪기 싫은 일을 타인에게 해서는 안 됩니다.</p>
           </section>
-
+          
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               1. 禁止事項 / 금지 사항
@@ -155,18 +170,30 @@ export default function TermsPage() {
               <li>すべての手紙は、送信されてから300日が経過した時点でシステムにより自動的に削除されます。<br/><span className="ml-5 inline-block mt-1">모든 편지는 발송된 지 300일이 경과하면 시스템에 의해 자동으로 삭제됩니다.</span></li>
             </ul>
           </section>
-          
         </div>
 
-        {/* 文化交流の同意選択エリア */}
-        <div className="flex flex-col gap-4 items-center justify-center pt-2">
+        {/* ユーザー情報入力エリア（生年月日と文化交流の同意） */}
+        <div className="flex flex-col gap-6 items-center justify-center pt-2 w-full max-w-xl mx-auto">
           
-          <div className="text-center text-rose-500 font-bold mb-2 flex flex-col gap-1">
-            <span>⚠️ 一度選択すると後から変更することはできません。</span>
-            <span>한 번 선택하면 나중에 변경할 수 없습니다.</span>
+          <div className="text-center text-rose-500 font-bold mb-2 flex flex-col gap-1 w-full">
+            <span>⚠️ 一度登録・選択すると後から変更することはできません。</span>
+            <span>한 번 등록/선택하면 나중에 변경할 수 없습니다.</span>
           </div>
 
-          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
+          {/* ★追加：生年月日入力フォーム */}
+          <div className="w-full bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex flex-col gap-2">
+            <label className="font-bold text-slate-800 text-base sm:text-lg">
+              生年月日を入力してください <span className="text-sm font-normal text-slate-500">/ 생년월일을 입력해 주세요</span>
+            </label>
+            <input 
+              type="date" 
+              value={birthDate}
+              onChange={(e) => setBirthDate(e.target.value)}
+              className="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-violet-500 focus:border-violet-500 outline-none transition-all text-slate-800 font-medium"
+            />
+          </div>
+
+          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full shadow-sm">
             <input 
               type="radio" 
               name="agreement_culture" 
@@ -180,7 +207,7 @@ export default function TermsPage() {
             </div>
           </label>
 
-          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
+          <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full shadow-sm">
             <input 
               type="radio" 
               name="agreement_culture" 
@@ -196,8 +223,9 @@ export default function TermsPage() {
         </div>
         
         {/* 下部アクション (LINE決済 & カカオ決済) */}
+        {/* ★変更：selectedCulture と birthDate の両方が入力されているかチェック */}
         <div className="flex flex-col items-center gap-3 pt-4 w-full max-w-md mx-auto">
-          {selectedCulture !== null ? (
+          {(selectedCulture !== null && birthDate !== '') ? (
             <>
               <button 
                 onClick={() => handlePayment('line')}
