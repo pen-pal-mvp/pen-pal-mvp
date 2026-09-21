@@ -100,7 +100,6 @@ export default function TermsPage() {
         {/* 文化交流の同意選択エリア */}
         <div className="flex flex-col gap-4 items-center justify-center pt-2">
           
-          {/* ★ 追加：変更できない旨の注意書き */}
           <div className="text-center text-rose-500 font-bold mb-2 flex flex-col gap-1">
             <span>⚠️ 一度選択すると後から変更することはできません。</span>
             <span>한 번 선택하면 나중에 변경할 수 없습니다.</span>
@@ -133,18 +132,32 @@ export default function TermsPage() {
           </label>
         </div>
         
-        {/* 下部アクション */}
-        <div className="flex justify-center pt-4">
+        {/* 下部アクション (LINE決済 & カカオ決済) */}
+        <div className="flex flex-col items-center gap-3 pt-4 w-full max-w-md mx-auto">
           {isAgreed ? (
-            <Link href="/premium" className="w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
-              <span>✨ プレミアム登録</span>
-              <span className="text-sm">프리미엄 등록</span>
-            </Link>
+            <>
+              <button className="w-full px-8 py-4 bg-[#06C755] hover:bg-[#05b34c] text-white rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+                <span>LINE Pay で登録 (300円 / 月)</span>
+                <span className="text-sm font-medium">라인페이로 등록 (300엔 / 월)</span>
+              </button>
+              
+              <button className="w-full px-8 py-4 bg-[#FEE500] hover:bg-[#e5ce00] text-slate-900 rounded-2xl font-bold text-lg shadow-sm transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+                <span>カカオペイで登録 (3000ウォン / 月)</span>
+                <span className="text-sm font-medium">카카오페이로 구독 (3000원 / 월)</span>
+              </button>
+            </>
           ) : (
-            <button disabled className="w-full sm:w-auto px-12 py-4 bg-slate-300 text-slate-500 cursor-not-allowed rounded-full font-bold text-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
-              <span>✨ プレミアム登録</span>
-              <span className="text-sm">프리미엄 등록</span>
-            </button>
+            <>
+              <button disabled className="w-full px-8 py-4 bg-slate-300 text-slate-500 cursor-not-allowed rounded-2xl font-bold text-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+                <span>LINE Pay で登録 (300円 / 月)</span>
+                <span className="text-sm font-medium">라인페이로 등록 (300엔 / 월)</span>
+              </button>
+              
+              <button disabled className="w-full px-8 py-4 bg-slate-300 text-slate-500 cursor-not-allowed rounded-2xl font-bold text-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+                <span>カカオペイで登録 (3000ウォン / 月)</span>
+                <span className="text-sm font-medium">카카오페이로 구독 (3000원 / 월)</span>
+              </button>
+            </>
           )}
         </div>
 
