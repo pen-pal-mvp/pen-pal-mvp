@@ -110,7 +110,7 @@ export default function PremiumPage() {
         </div>
 
         <div className="pt-6 text-center border-t border-slate-100">
-          <Link href="/dashboard" className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center gap-1">
+          <Link href="/welcome" className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center gap-1">
             <span>← ダッシュボードに戻る</span>
             <span>대시보드로 돌아가기</span>
           </Link>
