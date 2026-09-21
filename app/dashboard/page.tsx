@@ -21,12 +21,6 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  const { data: userData } = await supabase
-    .from('users')
-    .select('is_premium')
-    .eq('id', user.id)
-    .single()
-
   // 【強化フィルター】自分がブロックした相手、および自分をブロックした相手の両方を取得
   const { data: blockingData } = await supabase.from('blocks').select('blocked_id').eq('blocker_id', user.id)
   const { data: blockedByData } = await supabase.from('blocks').select('blocker_id').eq('blocked_id', user.id)
@@ -58,12 +52,6 @@ export default async function DashboardPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-200 pb-4">
           <h1 className="text-2xl font-bold text-slate-800">受信箱 / 받은 편지함</h1>
           <div className="flex flex-wrap gap-3 items-center">
-            {!userData?.is_premium && (
-              <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-4 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1" href="/premium">
-                <span className="text-sm font-bold">✨ プレミアム登録</span>
-                <span className="text-sm font-bold">프리미엄 등록</span>
-              </Link>
-            )}
             <Link className="bg-white border border-slate-200 hover:border-violet-200 px-4 py-2.5 rounded-full transition-all flex flex-col items-center justify-center text-center group leading-tight gap-1" href="/profile">
               <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">プロフィール・設定</span>
               <span className="text-sm font-medium text-slate-600 group-hover:text-violet-600">프로필·설정</span>
