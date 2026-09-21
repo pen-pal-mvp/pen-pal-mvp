@@ -27,6 +27,19 @@ export default function TermsPage() {
             </p>
           </section>
 
+          {/* 追加：総則 */}
+          <section>
+            <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
+              総則 / 총칙
+            </h2>
+            <p className="mb-2 font-bold text-lg text-slate-800">
+              自分がして欲しくないことを他者にしてはならない。
+            </p>
+            <p className="text-sm text-slate-500 font-medium">
+              자신이 겪기 싫은 일을 타인에게 해서는 안 됩니다.
+            </p>
+          </section>
+
           <section>
             <h2 className="text-xl font-bold text-violet-700 mb-3 border-l-4 border-violet-500 pl-3">
               1. 禁止事項 / 금지 사항
