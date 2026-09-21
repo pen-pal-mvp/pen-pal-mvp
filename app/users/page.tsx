@@ -3,7 +3,12 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams
+}: {
+  // ★追加：URLから translate パラメータを受け取る準備
+  searchParams: Promise<{ translate?: string }>
+}) {
   const cookieStore = await cookies()
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +25,10 @@ export default async function UsersPage() {
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
+
+  // ★追加：URLパラメータを取得して翻訳モードがONかどうかを判定
+  const resolvedParams = await searchParams
+  const isTranslated = resolvedParams.translate === 'true'
 
   // 自分以外の全ユーザーを取得（target_culture も追加で取得）
   const { data: allUsers } = await supabase
@@ -40,10 +49,14 @@ export default async function UsersPage() {
           </h1>
           
           {/* 中央：翻訳ボタン（自然な余白で配置） */}
-          <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
-            <span className="text-sm font-bold">✨ 翻訳する</span>
-            <span className="text-sm font-bold">번역하기</span>
-          </button>
+          {/* ★変更箇所：buttonからLinkに変更し、翻訳ON/OFFを切り替える設計にしました */}
+          <Link 
+            href={isTranslated ? "/users" : "/users?translate=true"}
+            className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto"
+          >
+            <span className="text-sm font-bold">{isTranslated ? "✨ 原文に戻す" : "✨ 翻訳する"}</span>
+            <span className="text-sm font-bold">{isTranslated ? "원문 보기" : "번역하기"}</span>
+          </Link>
 
           {/* 右：ダッシュボードへ戻る */}
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/dashboard">
@@ -94,9 +107,19 @@ export default async function UsersPage() {
                     <div className="font-bold text-slate-800 text-xl mb-2 truncate">
                       {targetUser.pen_name || '名無しさん'}
                     </div>
-                    <p className="text-base text-slate-600 leading-relaxed break-words">
-                      {targetUser.bio || '自己紹介はまだありません。 / 자기소개가 아직 없습니다.'}
-                    </p>
+                    {/* ★変更箇所：言語を自動判定し、APIの翻訳結果を表示できるように枠を設計しました */}
+                    <div className="text-base text-slate-600 leading-relaxed break-words whitespace-pre-wrap">
+                      {isTranslated && targetUser.bio ? (
+                        <div className="bg-blue-50 p-3 rounded-xl border border-blue-100 mt-2">
+                          <span className="text-blue-600 font-bold text-xs block mb-1">
+                            {/[가-힣]/.test(targetUser.bio) ? "🇰🇷→🇯🇵 翻訳結果 (API連携予定)" : "🇯🇵→🇰🇷 번역 결과 (API 연동 예정)"}
+                          </span>
+                          <span className="text-slate-800">{targetUser.bio}</span>
+                        </div>
+                      ) : (
+                        targetUser.bio || '自己紹介はまだありません。 / 자기소개가 아직 없습니다.'
+                      )}
+                    </div>
                   </div>
 
                   {/* 手紙を書くボタン（self-center を追加して常に上下中央に固定） */}
