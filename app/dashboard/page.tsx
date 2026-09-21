@@ -32,7 +32,8 @@ export default async function DashboardPage() {
 
   let query = supabase
     .from('letters')
-    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
+    // target_culture を追加取得
+    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type, target_culture)')
     .eq('receiver_id', user.id)
     .order('sent_at', { ascending: false })
 
@@ -103,11 +104,24 @@ export default async function DashboardPage() {
               const avatar = rawAvatar === 'deleted' ? '👻' : rawAvatar
               const isTextAvatar = /^[a-zA-Z0-9]+$/.test(avatar)
 
+              // target_cultureに応じて国旗スタイルと文字色を変更
+              let avatarStyle = isTextAvatar 
+                ? 'bg-violet-50 border-violet-100 text-violet-600' 
+                : 'bg-violet-50 border-violet-100 text-slate-700';
+
+              if (letter.sender.target_culture === 'japan') {
+                // 韓国国旗デザイン（赤・青ツートン + 白文字）
+                avatarStyle = 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent'; 
+              } else if (letter.sender.target_culture === 'korea') {
+                // 日本国旗デザイン（白地に赤丸 + 濃いグレー文字）
+                avatarStyle = 'bg-[radial-gradient(circle_at_center,#BC002D_55%,white_56%)] text-slate-700 border-slate-200';
+              }
+
               return (
                 <div key={letter.id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
                   
                   <div className="flex items-center mb-5 space-x-4">
-                    <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 ${isTextAvatar ? 'text-3xl font-normal text-violet-600 tracking-widest' : 'text-5xl'}`}>
+                    <div className={`flex items-center justify-center rounded-full border shrink-0 w-20 h-20 ${isTextAvatar ? 'text-3xl font-normal tracking-widest' : 'text-5xl'} ${avatarStyle}`}>
                       {avatar}
                     </div>
                     <div className="flex-1 min-w-0">
