@@ -137,7 +137,7 @@ export default async function ProfilePage() {
           </div>
 
           <div className="pt-4">
-            <button type="submit" className="w-full py-4 bg-gradient-to-r from-violet-500 to-pink-500 hover:from-violet-600 hover:to-pink-600 text-white rounded-full font-semibold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+            <button type="submit" className="w-full py-4 border-2 border-violet-400 text-violet-600 hover:bg-violet-50 rounded-xl font-bold text-lg transition-colors flex flex-col items-center justify-center gap-1 leading-tight">
               <span>保存してダッシュボードへ戻る</span>
               <span>저장하고 대시보드로 돌아가기</span>
             </button>
