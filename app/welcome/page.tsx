@@ -21,10 +21,10 @@ export default async function UsersPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // 自分以外の全ユーザーを取得（bioも追加で取得）
+  // 自分以外の全ユーザーを取得（target_culture を追加で取得）
   const { data: allUsers } = await supabase
     .from('users')
-    .select('id, pen_name, avatar_type, bio')
+    .select('id, pen_name, avatar_type, bio, target_culture')
     .neq('id', user.id)
 
   return (
@@ -70,11 +70,22 @@ export default async function UsersPage() {
                 ? '????' 
                 : targetUser.avatar_type;
 
+              // target_cultureに応じて国旗スタイルと文字色を変更
+              let avatarStyle = 'bg-violet-50 border-violet-100 text-slate-700'; // デフォルト（未設定時など）
+
+              if (targetUser.target_culture === 'japan') {
+                // 韓国国旗デザイン（赤・青ツートン + 白文字）
+                avatarStyle = 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent'; 
+              } else if (targetUser.target_culture === 'korea') {
+                // 日本国旗デザイン（白地に赤丸 + 濃いグレー文字）
+                avatarStyle = 'bg-[radial-gradient(circle_at_center,#BC002D_55%,white_56%)] text-slate-700 border-slate-200';
+              }
+
               return (
                 <div key={targetUser.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 hover:shadow-md hover:border-violet-200 transition-all group">
                   
                   {/* アバター */}
-                  <div className="flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 group-hover:scale-105 transition-transform text-4xl text-slate-700">
+                  <div className={`flex items-center justify-center rounded-full border shrink-0 w-20 h-20 group-hover:scale-105 transition-transform text-4xl ${avatarStyle}`}>
                     {displayMbti}
                   </div>
 
