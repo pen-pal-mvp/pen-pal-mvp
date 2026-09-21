@@ -45,10 +45,10 @@ export default async function UsersPage() {
             <span className="text-sm font-bold">번역하기</span>
           </button>
 
-          {/* 右：プレミアム登録 */}
-          <Link className="bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white px-5 py-2.5 rounded-full shadow-md transition-all flex flex-col items-center justify-center text-center leading-tight gap-1 shrink-0 w-full sm:w-auto" href="/premium">
-            <span className="text-sm font-bold">✨ プレミアム登録</span>
-            <span className="text-sm font-bold">프리미엄 등록</span>
+          {/* 右：利用規約（落ち着いたトーンのリンクに設計変更） */}
+          <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/terms">
+            <span>📄 利用規約</span>
+            <span className="text-sm">이용약관</span>
           </Link>
           
         </div>
