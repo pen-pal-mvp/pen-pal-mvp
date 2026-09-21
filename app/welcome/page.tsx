@@ -88,14 +88,14 @@ export default async function UsersPage() {
                     </p>
                   </div>
 
-                  {/* 手紙を書くボタン（self-center を追加して常に上下中央に固定） */}
-                  <Link 
-                    href={`/letters/new?to=${targetUser.id}&name=${encodeURIComponent(targetUser.pen_name || '名無しさん')}`}
+                  {/* 手紙を書くボタン（モック化してリンク無効） */}
+                  <button 
+                    type="button"
                     className="shrink-0 w-full sm:w-auto px-8 py-3 border-2 border-violet-400 text-violet-600 hover:bg-violet-50 rounded-xl font-bold text-sm transition-colors flex flex-col items-center justify-center leading-tight gap-1 mt-2 sm:mt-0 self-center"
                   >
                     <span>手紙を書く ✨</span>
                     <span>편지 쓰기</span>
-                  </Link>
+                  </button>
                 </div>
               )
             })
