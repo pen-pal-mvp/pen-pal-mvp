@@ -69,9 +69,9 @@ export default function TermsPage() {
         
         {/* 下部アクション */}
         <div className="flex justify-center pt-2">
-          <Link href="/welcome" className="px-12 py-4 border-2 border-violet-400 text-violet-600 hover:bg-violet-50 rounded-xl font-bold text-lg transition-colors flex flex-col items-center justify-center gap-1 leading-tight w-full sm:w-auto">
-            <span>確認して戻る</span>
-            <span className="text-sm">확인하고 뒤로 가기</span>
+          <Link href="/premium" className="w-full sm:w-auto px-12 py-4 bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-500 hover:to-orange-500 text-white rounded-full font-bold text-lg shadow-md hover:shadow-lg transition-all flex flex-col items-center justify-center gap-1 leading-tight">
+            <span>✨ プレミアム登録</span>
+            <span className="text-sm">프리미엄 등록</span>
           </Link>
         </div>
 
