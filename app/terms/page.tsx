@@ -92,13 +92,13 @@ export default function TermsPage() {
           
         </div>
 
-        {/* 追加：文化交流の同意選択エリア */}
+        {/* 文化交流の同意選択エリア */}
         <div className="flex flex-col gap-4 items-center justify-center pt-2">
           <label className="flex items-center gap-4 cursor-pointer p-5 bg-white border border-slate-200 rounded-2xl hover:border-violet-300 hover:bg-violet-50 transition-all w-full max-w-xl shadow-sm">
             <input type="radio" name="agreement_culture" className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して韓国文化と交流する</span>
-              <span className="text-sm font-medium text-slate-600 mt-1">이용약관에 동의하고 한국 문화와 교류하기</span>
+              <span className="font-bold text-slate-800 text-base sm:text-lg mt-1">이용약관에 동의하고 한국 문화와 교류하기</span>
             </div>
           </label>
 
@@ -106,7 +106,7 @@ export default function TermsPage() {
             <input type="radio" name="agreement_culture" className="w-6 h-6 accent-violet-600 shrink-0 cursor-pointer" />
             <div className="flex flex-col">
               <span className="font-bold text-slate-800 text-base sm:text-lg">利用規約に同意して日本文化と交流する</span>
-              <span className="text-sm font-medium text-slate-600 mt-1">이용약관에 동의하고 일본 문화와 교류하기</span>
+              <span className="font-bold text-slate-800 text-base sm:text-lg mt-1">이용약관에 동의하고 일본 문화와 교류하기</span>
             </div>
           </label>
         </div>
