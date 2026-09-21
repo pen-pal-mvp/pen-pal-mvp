@@ -21,10 +21,10 @@ export default async function UsersPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/')
 
-  // 自分以外の全ユーザーを取得（bioも追加で取得）
+  // 自分以外の全ユーザーを取得（target_culture も追加で取得）
   const { data: allUsers } = await supabase
     .from('users')
-    .select('id, pen_name, avatar_type, bio')
+    .select('id, pen_name, avatar_type, bio, target_culture')
     .neq('id', user.id)
 
   return (
@@ -70,11 +70,16 @@ export default async function UsersPage() {
                 ? '????' 
                 : targetUser.avatar_type;
 
+              // target_cultureがjapanなら韓国国旗のスタイル、それ以外は元の紫スタイル
+              const avatarStyle = targetUser.target_culture === 'japan'
+                ? 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent' // 韓国国旗デザイン
+                : 'bg-violet-50 border-violet-100 text-slate-700'; // 元の薄紫デザイン
+
               return (
                 <div key={targetUser.id} className="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-6 hover:shadow-md hover:border-violet-200 transition-all group">
                   
                   {/* アバター */}
-                  <div className="flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-20 h-20 group-hover:scale-105 transition-transform text-4xl text-slate-700">
+                  <div className={`flex items-center justify-center rounded-full border shrink-0 w-20 h-20 group-hover:scale-105 transition-transform text-4xl ${avatarStyle}`}>
                     {displayMbti}
                   </div>
 
