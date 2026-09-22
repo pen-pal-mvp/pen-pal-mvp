@@ -43,13 +43,17 @@ export default function TermsPage() {
         }
       }
       
-      // 決済APIの呼び出し
+      // 決済APIの呼び出し（userIdとemailをAPIへ送信するように同期）
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ provider }),
+        body: JSON.stringify({ 
+          provider,
+          userId: user?.id,
+          email: user?.email
+        }),
       });
 
       if (!response.ok) {
@@ -180,7 +184,6 @@ export default function TermsPage() {
 
           {/* 生年月日入力フォーム */}
           <div className="w-full bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex flex-col gap-2">
-            {/* ★変更：韓国語部分を覆っていたspanタグを削除し、日本語と同じスタイルが適用されるように修正しました */}
             <label className="font-bold text-slate-800 text-base sm:text-lg">
               生年月日を入力してください / 생년월일을 입력해 주세요
             </label>
