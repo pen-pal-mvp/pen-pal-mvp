@@ -33,7 +33,10 @@ export async function POST(req: Request) {
   if (event.type.includes('checkout.session')) {
     const session = event.data.object as Stripe.Checkout.Session
     
-    // 最初のユーザーを強制的にプレミアムにする（id=3に限らず最初に見つかったユーザーを更新）
+    // メタデータが存在しない場合（CLIテスト時等）でもデフォルト値を代入してNULLを防ぐ
+    const targetCulture = session.metadata?.targetCulture || 'korea'
+    const birthDate = session.metadata?.birthDate || '2000-01-01'
+
     const { data: users, error: fetchError } = await supabaseAdmin
       .from('users')
       .select('id')
@@ -51,6 +54,8 @@ export async function POST(req: Request) {
       .update({
         is_premium: true,
         stripe_customer_id: (session.customer as string) || 'test_customer',
+        target_culture: targetCulture,
+        birth_date: birthDate,
       })
       .eq('id', targetId)
 
