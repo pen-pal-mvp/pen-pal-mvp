@@ -34,7 +34,9 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     const customerId = session.customer as string;
-    const userId = session.metadata?.userId; 
+    
+    // 発行時の client_reference_id から userId を抽出するように同期
+    const userId = session.client_reference_id; 
 
     // ▼▼ 観測用のデバッグログ ▼▼
     console.log('=== WEBHOOK DEBUG ===');
