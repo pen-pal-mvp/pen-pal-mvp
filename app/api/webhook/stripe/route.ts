@@ -32,7 +32,8 @@ export async function POST(req: Request) {
 
   if (event.type.includes('checkout.session')) {
     const session = event.data.object as Stripe.Checkout.Session
-    const userId = session.metadata?.userId || '3'
+    const rawUserId = session.metadata?.userId || '3'
+    const userId = Number(rawUserId)
 
     const { error } = await supabaseAdmin
       .from('users')
