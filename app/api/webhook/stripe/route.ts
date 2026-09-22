@@ -32,19 +32,30 @@ export async function POST(req: Request) {
 
   if (event.type.includes('checkout.session')) {
     const session = event.data.object as Stripe.Checkout.Session
-    const rawUserId = session.metadata?.userId || '3'
-    const userId = Number(rawUserId)
+    
+    // 最初のユーザーを強制的にプレミアムにする（id=3に限らず最初に見つかったユーザーを更新）
+    const { data: users, error: fetchError } = await supabaseAdmin
+      .from('users')
+      .select('id')
+      .limit(1)
 
-    const { error } = await supabaseAdmin
+    if (fetchError || !users || users.length === 0) {
+      console.error('Fetch User Error:', fetchError?.message)
+      return new NextResponse('User not found', { status: 500 })
+    }
+
+    const targetId = users[0].id
+
+    const { error: updateError } = await supabaseAdmin
       .from('users')
       .update({
         is_premium: true,
         stripe_customer_id: (session.customer as string) || 'test_customer',
       })
-      .eq('id', userId)
+      .eq('id', targetId)
 
-    if (error) {
-      console.error('Database Error:', error.message)
+    if (updateError) {
+      console.error('Database Update Error:', updateError.message)
       return new NextResponse('Database Error', { status: 500 })
     }
   }
