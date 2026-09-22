@@ -3,6 +3,7 @@ import { createServerClient } from '@supabase/ssr'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import ActionMenu from '@/app/dashboard/ActionMenu'
+import OpenAI from 'openai'
 
 export default async function LetterViewPage({ params }: { params: Promise<{ id: string }> }) {
   const cookieStore = await cookies()
@@ -62,31 +63,54 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     : 'bg-violet-50 border-violet-100 text-slate-700';
 
   if (letter.sender?.target_culture === 'japan') {
-    // 韓国国旗デザイン（赤・青ツートン + 白文字）
     avatarStyle = 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent'; 
   } else if (letter.sender?.target_culture === 'korea') {
-    // 日本国旗デザイン（白地に赤丸 + 濃いグレー文字）
     avatarStyle = 'bg-[radial-gradient(circle_at_center,#BC002D_55%,white_56%)] text-slate-700 border-slate-200';
+  }
+
+  // ★追加：OpenAIによる自動翻訳処理
+  let translatedText = "※翻訳に失敗しました。 / 번역에 실패했습니다.";
+  try {
+    if (process.env.OPENAI_API_KEY) {
+      const openai = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+      });
+      const response = await openai.chat.completions.create({
+        model: "gpt-4o-mini", // コストと速度のバランスが良いモデル
+        messages: [
+          {
+            role: "system",
+            content: "You are an expert translator. If the input text is mostly in Japanese, translate it to natural Korean. If the input text is mostly in Korean, translate it to natural Japanese. Output ONLY the translated text without any explanations or extra formatting."
+          },
+          {
+            role: "user",
+            content: letter.content
+          }
+        ],
+        temperature: 0.3,
+      });
+      translatedText = response.choices[0]?.message?.content || translatedText;
+    } else {
+      translatedText = "※APIキーが設定されていません。 / API 키가 설정되지 않았습니다.";
+    }
+  } catch (err) {
+    console.error("OpenAI Translation Error:", err);
+    translatedText = "※翻訳エラーが発生しました。 / 번역 오류가 발생했습니다.";
   }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        {/* ヘッダー部分：Flexboxで自然なバランス配置 */}
+        {/* ヘッダー部分 */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-4 px-2">
-          
-          {/* 左：手紙を読む */}
           <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 text-center md:text-left shrink-0">
             手紙を読む / 편지 읽기
           </h1>
-          
-          {/* 右：受信箱へ戻る */}
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/dashboard">
             <span>← 受信箱へ戻る</span>
             <span>수신함으로 돌아가기</span>
           </Link>
-          
         </div>
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
@@ -109,7 +133,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
-          {/* AI自動翻訳セクション */}
+          {/* ★変更：AI自動翻訳セクション */}
           <section>
             <div className="font-semibold text-xl mb-3 flex items-center gap-2">
               <span className="mr-1">✨</span> 
@@ -117,12 +141,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
                 AI自動翻訳 / AI 자동 번역
               </span>
             </div>
-            <div className="text-base sm:text-lg font-medium p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap">
-              ※現在、AI自動翻訳システムは準備中です。<br/>
-              （今後のアップデートでOpenAIと連携されます）<br/>
-              <br/>
-              ※현재 AI 자동 번역 시스템은 준비 중입니다.<br/>
-              (향후 업데이트에서 OpenAI와 연동될 예정입니다)
+            <div className="text-base sm:text-lg font-medium p-6 border border-violet-100 rounded-2xl bg-violet-50 text-slate-700 leading-relaxed shadow-inner whitespace-pre-wrap break-words">
+              {translatedText}
             </div>
           </section>
 
