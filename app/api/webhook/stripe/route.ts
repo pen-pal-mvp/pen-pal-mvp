@@ -35,15 +35,9 @@ export async function POST(req: Request) {
     const session = event.data.object as Stripe.Checkout.Session;
     const customerId = session.customer as string;
     
-    // 発行時の client_reference_id から userId を抽出するように同期
     const userId = session.client_reference_id; 
-
-    // ▼▼ 観測用のデバッグログ ▼▼
-    console.log('=== WEBHOOK DEBUG ===');
-    console.log('userId:', userId);
-    console.log('customerId:', customerId);
-    console.log('=====================');
-    // ▲▲ ここまで ▲▲
+    const targetCulture = session.metadata?.targetCulture;
+    const birthDate = session.metadata?.birthDate;
 
     if (userId) {
       const supabase = createClient(
@@ -53,11 +47,16 @@ export async function POST(req: Request) {
 
       const { error } = await supabase
         .from('users')
-        .update({ is_premium: true, stripe_customer_id: customerId })
+        .update({ 
+          is_premium: true, 
+          stripe_customer_id: customerId,
+          target_culture: targetCulture,
+          birth_date: birthDate
+        })
         .eq('id', userId);
 
       if (error) {
-        console.error('Failed to update premium status:', error);
+        console.error('Failed to update user data:', error);
         return NextResponse.json({ error: 'Database update failed' }, { status: 500 });
       }
     }

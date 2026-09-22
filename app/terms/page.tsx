@@ -19,31 +19,13 @@ export default function TermsPage() {
   )
 
   const handlePayment = async (provider: string) => {
-    // 生年月日と文化の両方が入力されていない場合は進めない
     if (!selectedCulture || !birthDate || isProcessing) return
     setIsProcessing(true)
     
     try {
       const { data: { user } } = await supabase.auth.getUser()
       
-      if (user) {
-        // 文化と一緒に生年月日（birth_date）もユーザーのUUIDに紐づけて保存
-        const { error } = await supabase
-          .from('users')
-          .update({ 
-            target_culture: selectedCulture,
-            birth_date: birthDate
-          })
-          .eq('id', user.id)
-
-        if (error) {
-          console.error('Error saving user data:', error)
-          setIsProcessing(false)
-          return
-        }
-      }
-      
-      // 決済APIの呼び出し（userIdとemailをAPIへ送信するように同期）
+      // RLSを回避し、決済APIへ全データを送信する単一経路へ統合
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: {
@@ -52,7 +34,9 @@ export default function TermsPage() {
         body: JSON.stringify({ 
           provider,
           userId: user?.id,
-          email: user?.email
+          email: user?.email,
+          targetCulture: selectedCulture,
+          birthDate: birthDate
         }),
       });
 
@@ -79,7 +63,6 @@ export default function TermsPage() {
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        {/* ヘッダー部分 */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-4 px-2">
           <h1 className="text-2xl sm:text-3xl font-semibold text-slate-800 text-center md:text-left shrink-0">
             利用規約 / 이용약관
@@ -90,7 +73,6 @@ export default function TermsPage() {
           </Link>
         </div>
 
-        {/* 規約本文エリア */}
         <div className="bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-slate-100 space-y-10 leading-relaxed text-slate-700">
           <section>
             <p className="text-lg font-medium mb-4">
@@ -174,7 +156,6 @@ export default function TermsPage() {
           </section>
         </div>
 
-        {/* ユーザー情報入力エリア（生年月日と文化交流の同意） */}
         <div className="flex flex-col gap-6 items-center justify-center pt-2 w-full max-w-xl mx-auto">
           
           <div className="text-center text-rose-500 font-bold mb-2 flex flex-col gap-1 w-full">
@@ -182,7 +163,6 @@ export default function TermsPage() {
             <span>한 번 등록/선택하면 나중에 변경할 수 없습니다.</span>
           </div>
 
-          {/* 生年月日入力フォーム */}
           <div className="w-full bg-white p-5 border border-slate-200 rounded-2xl shadow-sm flex flex-col gap-2">
             <label className="font-bold text-slate-800 text-base sm:text-lg">
               生年月日を入力してください / 생년월일을 입력해 주세요
@@ -224,7 +204,6 @@ export default function TermsPage() {
           </label>
         </div>
         
-        {/* 下部アクション (LINE決済 & カカオ決済) */}
         <div className="flex flex-col items-center gap-3 pt-4 w-full max-w-md mx-auto">
           {(selectedCulture !== null && birthDate !== '') ? (
             <>

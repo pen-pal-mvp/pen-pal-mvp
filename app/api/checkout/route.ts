@@ -8,7 +8,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { userId, email, provider } = body
+    const { userId, email, provider, targetCulture, birthDate } = body
     
     const origin = request.headers.get('origin') || 'http://localhost:3000'
 
@@ -20,6 +20,10 @@ export async function POST(request: Request) {
       payment_method_types: paymentMethods,
       customer_email: email,
       client_reference_id: userId,
+      metadata: {
+        targetCulture: targetCulture,
+        birthDate: birthDate
+      },
       line_items: [
         {
           price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
