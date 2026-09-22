@@ -25,7 +25,8 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
 
   const { data: letter, error } = await supabase
     .from('letters')
-    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type)')
+    // ★追加: target_culture を一緒に取得するように変更
+    .select('*, sender:users!letters_sender_id_fkey(pen_name, avatar_type, target_culture)')
     .eq('id', letterId)
     .single()
 
@@ -49,11 +50,25 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     await supabase.from('letters').update({ is_read: true }).eq('id', letterId)
   }
 
-  const senderAvatar = letter.sender?.avatar_type === 'deleted' ? '👻' : (letter.sender?.avatar_type || '😊')
+  const rawAvatar = letter.sender?.avatar_type || '😊'
+  const senderAvatar = rawAvatar === 'deleted' ? '👻' : rawAvatar
   const senderName = letter.sender?.pen_name || '退会したユーザー'
   
   // 英字（MBTI等）か絵文字かの自動判別
   const isTextAvatar = /^[a-zA-Z0-9]+$/.test(senderAvatar)
+
+  // ★追加: target_cultureに応じて国旗スタイルと文字色を変更（ダッシュボードと同じロジック）
+  let avatarStyle = isTextAvatar 
+    ? 'bg-violet-50 border-violet-100 text-violet-600' 
+    : 'bg-violet-50 border-violet-100 text-slate-700';
+
+  if (letter.sender?.target_culture === 'japan') {
+    // 韓国国旗デザイン（赤・青ツートン + 白文字）
+    avatarStyle = 'bg-gradient-to-b from-[#CD2E3A] from-50% to-[#0047A0] to-50% text-white border-transparent'; 
+  } else if (letter.sender?.target_culture === 'korea') {
+    // 日本国旗デザイン（白地に赤丸 + 濃いグレー文字）
+    avatarStyle = 'bg-[radial-gradient(circle_at_center,#BC002D_55%,white_56%)] text-slate-700 border-slate-200';
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
@@ -83,8 +98,9 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
 
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
-          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6">
-            <div className={`flex items-center justify-center rounded-full border border-violet-100 shrink-0 bg-violet-50 w-16 h-16 ${isTextAvatar ? 'text-2xl font-normal text-violet-600 tracking-widest' : 'text-4xl'}`}>
+          <div className="flex items-center space-x-5 border-b border-slate-100 pb-6 pr-24">
+            {/* ★変更: 判定した avatarStyle を適用 */}
+            <div className={`flex items-center justify-center rounded-full border shrink-0 w-16 h-16 ${isTextAvatar ? 'text-xl font-bold tracking-widest' : 'text-4xl'} ${avatarStyle}`}>
               {senderAvatar}
             </div>
             <div className="flex flex-col gap-1">
@@ -101,7 +117,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             </div>
           </section>
 
-          {/* ★追加：AI自動翻訳セクション */}
+          {/* AI自動翻訳セクション */}
           <section>
             <div className="font-semibold text-xl mb-3 flex items-center gap-2">
               <span className="mr-1">✨</span> 
