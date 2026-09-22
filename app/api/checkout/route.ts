@@ -8,14 +8,18 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { userId, email } = body
+    const { userId, email, provider } = body
     
     const origin = request.headers.get('origin') || 'http://localhost:3000'
 
+    const paymentMethods = provider === 'kakao' ? ['card', 'kakao_pay'] : 
+                           provider === 'line' ? ['card', 'line_pay'] : 
+                           ['card'];
+
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      customer_email: email, // 顧客のメールアドレスを自動入力
-      client_reference_id: userId, // 誰の決済かを判定するためのID
+      payment_method_types: paymentMethods,
+      customer_email: email,
+      client_reference_id: userId,
       line_items: [
         {
           price: process.env.NEXT_PUBLIC_STRIPE_PRICE_ID,
@@ -23,8 +27,8 @@ export async function POST(request: Request) {
         },
       ],
       mode: 'subscription',
-      success_url: `${origin}/dashboard`, // 決済成功時の戻り先
-      cancel_url: `${origin}/welcome`, // キャンセル時の戻り先
+      success_url: `${origin}/dashboard`,
+      cancel_url: `${origin}/welcome`,
     })
 
     return NextResponse.json({ url: session.url })
