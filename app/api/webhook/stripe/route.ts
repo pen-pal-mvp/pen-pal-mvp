@@ -28,23 +28,23 @@ export async function POST(req: Request) {
     return new NextResponse(`Webhook Error: ${error.message}`, { status: 400 })
   }
 
-  if (event.type === 'checkout.session.completed') {
+  console.log('Event received:', event.type)
+
+  if (event.type.includes('checkout.session')) {
     const session = event.data.object as Stripe.Checkout.Session
     const userId = session.metadata?.userId || '3'
 
-    if (userId) {
-      const { error } = await supabaseAdmin
-        .from('users')
-        .update({
-          is_premium: true,
-          stripe_customer_id: session.customer as string,
-        })
-        .eq('id', userId)
+    const { error } = await supabaseAdmin
+      .from('users')
+      .update({
+        is_premium: true,
+        stripe_customer_id: (session.customer as string) || 'test_customer',
+      })
+      .eq('id', userId)
 
-      if (error) {
-        console.error('Database Error:', error.message)
-        return new NextResponse('Database Error', { status: 500 })
-      }
+    if (error) {
+      console.error('Database Error:', error.message)
+      return new NextResponse('Database Error', { status: 500 })
     }
   }
 
