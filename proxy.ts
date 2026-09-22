@@ -1,8 +1,28 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { Ratelimit } from '@upstash/ratelimit'
+import { Redis } from '@upstash/redis'
 
-// 変更点： default を外し、明確に "proxy" という名前で関数をエクスポートする
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL || '',
+  token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
+})
+
+const ratelimit = new Ratelimit({
+  redis: redis,
+  limiter: Ratelimit.slidingWindow(10, '10 s'),
+})
+
 export async function proxy(request: NextRequest) {
+  // 1. IPベースのRate Limiting（異常アクセスの遮断）
+  const ip = request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? '127.0.0.1'
+  const { success } = await ratelimit.limit(ip)
+
+  if (!success) {
+    return new NextResponse('Too Many Requests', { status: 429 })
+  }
+
+  // 2. Supabase SSR Auth（正常なアクセスのみ処理）
   let supabaseResponse = NextResponse.next({
     request,
   })
