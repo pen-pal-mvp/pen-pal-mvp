@@ -39,12 +39,6 @@ export default async function UsersPage() {
             ペンパルを探す / 펜팔 찾기
           </h1>
           
-          {/* 中央：翻訳ボタン（自然な余白で配置） */}
-          <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
-            <span className="text-sm font-bold">✨ 翻訳する</span>
-            <span className="text-sm font-bold">번역하기</span>
-          </button>
-
           {/* 右：利用規約（落ち着いたトーンのリンクに設計変更） */}
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/terms">
             <span>📄 利用規約</span>
