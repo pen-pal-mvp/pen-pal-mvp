@@ -73,7 +73,7 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
     <div className="min-h-screen bg-slate-50 p-6 md:p-8 font-sans text-slate-800">
       <div className="max-w-3xl mx-auto space-y-8">
         
-        {/* ヘッダー部分：Flexboxで自然なバランス配置（ド真ん中強制を解除） */}
+        {/* ヘッダー部分：Flexboxで自然なバランス配置 */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 border-b border-slate-200 pb-4 px-2">
           
           {/* 左：手紙を読む */}
@@ -81,12 +81,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
             手紙を読む / 편지 읽기
           </h1>
           
-          {/* 中央：翻訳ボタン（自然な余白で配置） */}
-          <button type="button" className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white px-8 py-2.5 rounded-2xl shadow-md transition-all flex flex-col items-center justify-center leading-tight gap-1 w-full sm:w-auto">
-            <span className="text-sm font-bold">✨ 翻訳する</span>
-            <span className="text-sm font-bold">번역하기</span>
-          </button>
-
           {/* 右：受信箱へ戻る */}
           <Link className="text-base text-slate-500 hover:text-violet-600 transition-colors font-semibold flex flex-col items-center md:items-end leading-tight gap-1 shrink-0" href="/dashboard">
             <span>← 受信箱へ戻る</span>
@@ -98,7 +92,6 @@ export default async function LetterViewPage({ params }: { params: Promise<{ id:
         <div className="space-y-8 bg-white p-8 md:p-10 rounded-3xl shadow-sm hover:shadow-md transition-shadow border border-slate-100 relative">
           
           <div className="flex items-center space-x-5 border-b border-slate-100 pb-6 pr-24">
-            {/* ★変更: MBTIの文字の太さを font-bold から font-medium に変更しました */}
             <div className={`flex items-center justify-center rounded-full border shrink-0 w-16 h-16 ${isTextAvatar ? 'text-2xl font-medium tracking-widest' : 'text-4xl'} ${avatarStyle}`}>
               {senderAvatar}
             </div>
